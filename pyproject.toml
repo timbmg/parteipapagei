@@ -12,7 +12,6 @@ dependencies = [
     "llama-index-embeddings-gemini>=0.3.0",
     "llama-index-vector-stores-chroma>=0.4.1",
     "llama-index-llms-gemini>=0.4.2",
-    "google-generativeai>=0.5.4",
     "simple-parsing>=0.1.6",
 ]
 
