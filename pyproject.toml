@@ -13,6 +13,7 @@ dependencies = [
     "llama-index-vector-stores-chroma>=0.4.1",
     "llama-index-llms-gemini>=0.4.2",
     "simple-parsing>=0.1.6",
+    "streamlit>=1.41.1",
 ]
 
 [dependency-groups]
