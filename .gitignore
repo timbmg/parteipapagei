@@ -11,6 +11,5 @@ wheels/
 
 # 
 .env
-chroma
 .DS_Store
 .streamlit/secrets.toml
