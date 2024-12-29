@@ -4,6 +4,7 @@ from typing import Optional
 
 import chromadb
 import streamlit as st
+import xxhash
 from llama_index.core import (
     VectorStoreIndex,
     Settings,
@@ -29,6 +30,22 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 
 from party_data import party_data
 
+
+def create_anchor_from_text(text: str | None) -> str:
+    # based on https://github.com/streamlit/streamlit/blob/833efa9fe408c692906bd07b201b5e715bcceae2/frontend/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown.tsx#L121-L137
+    new_anchor = ""
+    
+    # Check if the text is valid ASCII characters
+    is_ascii = text and all(ord(c) < 128 for c in text)
+    
+    if is_ascii and text:
+        new_anchor = text.lower().replace(" ", "-").replace("--", "-")
+        new_anchor = re.sub(r"[.,:\!\?]", "", new_anchor)
+    elif text:
+        # If the text is not valid ASCII, use a hash of the text
+        new_anchor = xxhash.xxh32(text, seed=0xabcd).hexdigest()[:16]
+    
+    return new_anchor
 
 class ExampleEventHandler(BaseEventHandler):
     events: list[BaseEvent] = []
@@ -170,7 +187,8 @@ def response_generator(user_query: str, party: str):
         text = n["node"]["text"]
         score = n["score"]
         id_ = n["node"]["id_"]
-        print(f"ID: {id_}, Score: {score:0.4f}, Text: {text[:100]}")
+        header = n["node"]["metadata"]["header"]
+        print(f"ID: {id_}, Score: {score:0.4f}, Header: {header[:50]}, Text: {text[:100]}")
 
     message_iter = iter(response.response_gen)
     while True:
@@ -178,17 +196,27 @@ def response_generator(user_query: str, party: str):
             stream = next(message_iter)
         except StopIteration:
             break
+        fragments = list(set(re.findall(r'\[\d+(?:,\s*\d+)*\]?|\[?\d+(?:,\s*\d+)*\]', stream)))
+        for fragment in fragments:
+            modified_fragment = ""
+            last_char_was_digit = False
+            parsed_number = ""
+            for c in fragment:
+                if c.isdigit():
+                    parsed_number += c
+                    last_char_was_digit = True
+                else:
+                    if last_char_was_digit:
+                        _id = create_anchor_from_text(response.source_nodes[int(parsed_number) - 1].node.metadata["header"])
+                        modified_fragment += f"[{parsed_number}]({party}#{_id})"
+                    modified_fragment += c
+                    last_char_was_digit = False
+                    parsed_number = ""
+            if last_char_was_digit:
+                _id = create_anchor_from_text(response.source_nodes[int(parsed_number) - 1].node.metadata["header"])
+                modified_fragment += f"[{parsed_number}]({party}#{_id})"
+            stream = stream.replace(fragment, modified_fragment)
 
-        # check if a reference is contained in the response like [2, 3]
-        if re.match(r"\[\d+(, \d+)*\]", stream):
-            # replace the reference with the corresponding link
-            for reference in re.finditer(r"\[(\d+(?:,\d+)*)\]", stream):
-                reference = int(reference.group())
-                stream = stream.replace(
-                    f"[{reference}]",
-                    f"[{reference}]({response.source_nodes[reference-1].url})",
-                )
-                print(response.source_nodes[reference - 1].to_dict())
         yield stream
 
 
