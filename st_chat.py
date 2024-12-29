@@ -30,6 +30,13 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 
 from party_data import party_data
 
+QUERY_GEN_PROMPT = """Du bist ein hilfreicher Assistent, der basierend auf einer Frage 
+eines Bürgers zum Wahlprogrammen einer Partei ähnliche Fragen erstellt. Überlege dir 
+unterschiedliche Formulierungen und weitere Fragen um relevante Informationen aus dem
+Wahlprogramm zu finden, die für die beantwortung der Frage nützlich sind. Generiere 
+insgesamt {num_queries} Fragen, jede in einer eigenen Zeile, basierend auf der 
+folgenden Frage: '{query}'\nGenerierte Fragen:\n"
+"""
 
 def create_anchor_from_text(text: str | None) -> str:
     # based on https://github.com/streamlit/streamlit/blob/833efa9fe408c692906bd07b201b5e715bcceae2/frontend/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown.tsx#L121-L137
@@ -110,11 +117,11 @@ def init_query_engines():
 
         dense_retriever = VectorIndexRetriever(
             index=index,
-            similarity_top_k=10,
+            similarity_top_k=100,
             filters=filters,
         )
         bm25_retriever = BM25Retriever.from_persist_dir(f"bm25/{party}")
-        bm25_retriever.similarity_top_k = 10
+        bm25_retriever.similarity_top_k = 100
 
         fusion_retriever = QueryFusionRetriever(
             [
@@ -122,10 +129,11 @@ def init_query_engines():
                 bm25_retriever,
             ],
             mode="reciprocal_rerank",
-            num_queries=1,
+            num_queries=4,
             use_async=False,
             similarity_top_k=10,
             verbose=True,
+            query_gen_prompt=QUERY_GEN_PROMPT,
         )
 
         # configure response synthesizer
