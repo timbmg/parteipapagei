@@ -30,6 +30,10 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 
 from party_data import party_data
 
+os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+GEMINI_LLM_MODEL = "models/gemini-1.5-flash-002"
+GEMINI_EMBEDDING_MODEL = "models/text-embedding-004"
+
 QUERY_GEN_PROMPT = """Du bist ein hilfreicher Assistent, der basierend auf einer Frage 
 eines Bürgers zum Wahlprogrammen einer Partei ähnliche Fragen erstellt. Überlege dir 
 unterschiedliche Formulierungen und weitere Fragen um relevante Informationen aus dem
@@ -93,17 +97,14 @@ class RankCutoffPostprocessor(BaseNodePostprocessor):
 @st.cache_resource
 def init_query_engines():
 
-    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
-    gemini_llm = "models/gemini-1.5-flash-002"
-    gemini_embedding = "models/text-embedding-004"
-    persist_dir = "chroma"
-    chroma_collection = "wahlprogramme"
+    CHROMA_PERSIST_DIR = "chroma"
+    CHROMA_COLLECTION = "wahlprogramme"
 
-    Settings.llm = Gemini(model=gemini_llm)
-    Settings.embed_model = GeminiEmbedding(model=gemini_embedding, embed_batch_size=4)
-
-    db = chromadb.PersistentClient(path=persist_dir)
-    chroma_collection = db.get_or_create_collection(chroma_collection)
+    Settings.llm = Gemini(model=GEMINI_LLM_MODEL)
+    Settings.embed_model = GeminiEmbedding(model=GEMINI_EMBEDDING_MODEL)
+    
+    db = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
+    chroma_collection = db.get_or_create_collection(CHROMA_COLLECTION)
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     index = VectorStoreIndex.from_vector_store(vector_store)
 
