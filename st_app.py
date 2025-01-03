@@ -26,10 +26,24 @@ for party, data in party_data.items():
         icon=data["emoji"],
         url_path=party
     )
+
+about = st.Page(
+    partial(st.markdown, open("about.md").read(), unsafe_allow_html=True),
+    title="Über ChatBTW",
+    icon="🧑🏼‍💻",
+    url_path="about"
+)
+disclaimer = st.Page(
+    partial(st.markdown, open("disclaimer.md").read(), unsafe_allow_html=True),
+    title="Disclaimer",
+    icon="⚠️",
+    url_path="disclaimer"
+)
 pg = st.navigation(
     {
         "Chat": [st.Page("st_chat.py", title="ChatBTW", icon="🗳️", default=True)],
-        "Wahlprogramme": [data["page"] for data in party_data.values()]
+        "Wahlprogramme": [data["page"] for data in party_data.values()],
+        "Über": [about, disclaimer]
     },
     expanded=False
 )
