@@ -14,6 +14,8 @@ st.set_page_config(
 
 def party_program_page(party):
     st.title(f"{party_data[party]['emoji']} {party_data[party]['name']}")
+    # insert link to original program
+    st.markdown(f"[PDF]({party_data[party]['url_to_program']})")
     with open(f"data/clean/{party}.md") as fh:
         content = fh.read()
     content.replace("\n", "\n\n")
