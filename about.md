@@ -1,5 +1,9 @@
 # Über ChatBTW
-ChatBTW wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](github.com/timbmg/chatbtw) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte gegeben. Die Informationen sind nicht verbindlich und dienen nur zur Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer).
+ChatBTW wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](https://github.com/timbmg/chatbtw) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte gegeben. Die Informationen sind nicht verbindlich und dienen nur zur Bildung und Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer).
+
+Für Fragen und Anregungen können Sie mich unter [baumgeartner.t@gmail.com](mailto:baumgaertner.t@gmail.com) erreichen.
+
+Für Feature Requests und Bug Reports können Sie gerne ein [Issue](https://github.com/timbmg/chatbtw/issues) auf GitHub erstellen.
 
 ## Technologie
 ChatBTW basiert auf Retrieval Augmented Generation (RAG) [[1](#refRAG)]. Dabei wird eine Suche mit einem Large Lange Model (LLM) verknüpft. Im Fall von ChatBTW werden zunächst relevante Passagen aus dem Wahlprgramm gesucht basierend auf der Eingabe des Nutzers. Abschließend werden die relevanten Passagen genutzt um eine Antwort zu geniereren.
