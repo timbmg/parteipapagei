@@ -55,8 +55,7 @@ def create_anchor_from_text(text: str | None) -> str:
         new_anchor = re.sub(r"[.,:\!\?]", "", new_anchor)
     elif text:
         # If the text is not valid ASCII, use a hash of the text
-        new_anchor = xxhash.xxh32(text, seed=0xabcd).hexdigest()[:16]
-    
+        new_anchor = xxhash.xxh32(text, seed=0xABCD).hexdigest()[:16]
     return new_anchor
 
 class ExampleEventHandler(BaseEventHandler):
@@ -213,7 +212,9 @@ def response_generator(user_query: str, party: str):
             stream = next(message_iter)
         except StopIteration:
             break
-        fragments = list(set(re.findall(r'\[\d+(?:,\s*\d+)*\]?|\[?\d+(?:,\s*\d+)*\]', stream)))
+        fragments = list(
+            set(re.findall(r"\[\d+(?:,\s*\d+)*\]?|\[?\d+(?:,\s*\d+)*\]", stream))
+        )
         for fragment in fragments:
             modified_fragment = ""
             last_char_was_digit = False
@@ -224,13 +225,21 @@ def response_generator(user_query: str, party: str):
                     last_char_was_digit = True
                 else:
                     if last_char_was_digit:
-                        _id = create_anchor_from_text(response.source_nodes[int(parsed_number) - 1].node.metadata["header"])
+                        _id = create_anchor_from_text(
+                            response.source_nodes[int(parsed_number) - 1].node.metadata[
+                                "header"
+                            ]
+                        )
                         modified_fragment += f"[{parsed_number}]({party}#{_id})"
                     modified_fragment += c
                     last_char_was_digit = False
                     parsed_number = ""
             if last_char_was_digit:
-                _id = create_anchor_from_text(response.source_nodes[int(parsed_number) - 1].node.metadata["header"])
+                _id = create_anchor_from_text(
+                    response.source_nodes[int(parsed_number) - 1].node.metadata[
+                        "header"
+                    ]
+                )
                 modified_fragment += f"[{parsed_number}]({party}#{_id})"
             stream = stream.replace(fragment, modified_fragment)
 
