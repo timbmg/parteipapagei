@@ -1,5 +1,6 @@
 import os
 import re
+from functools import cache
 from typing import Optional
 
 import chromadb
@@ -94,6 +95,13 @@ class RankCutoffPostprocessor(BaseNodePostprocessor):
         return sorted_nodes[: self.rank_cutoff]
 
 
+class CachedQueryFusionRetriever(QueryFusionRetriever):
+
+    @cache
+    def _get_queries(self, original_query: str):
+        return super()._get_queries(original_query)
+
+
 @st.cache_resource
 def init_query_engines():
 
@@ -124,7 +132,7 @@ def init_query_engines():
         bm25_retriever = BM25Retriever.from_persist_dir(f"bm25/{party}")
         bm25_retriever.similarity_top_k = 100
 
-        fusion_retriever = QueryFusionRetriever(
+        fusion_retriever = CachedQueryFusionRetriever(
             [
                 dense_retriever,
                 bm25_retriever,
