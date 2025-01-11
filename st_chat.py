@@ -28,6 +28,7 @@ from llama_index.embeddings.gemini import GeminiEmbedding
 from llama_index.llms.gemini import Gemini
 from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.vector_stores.chroma import ChromaVectorStore
+from supabase import create_client, Client
 from streamlit_cookies_controller import CookieController
 
 from party_data import party_data
@@ -43,12 +44,34 @@ Wahlprogramm zu finden, die für die beantwortung der Frage nützlich sind. Gene
 insgesamt {num_queries} Fragen, jede in einer eigenen Zeile, basierend auf der 
 folgenden Frage: '{query}'\nGenerierte Fragen:\n"
 """
+ENVIRONMENT = "test"
+
+
 controller = CookieController()
 import time
 
 time.sleep(
     0.2
 )  # we need to wait for the cookie to be set, otherwise the cookie dialog will be shown again
+
+
+@st.cache_resource
+def init_connection() -> Client:
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
+
+supabase = init_connection()
+user_data = supabase.auth.sign_in_with_password(
+    # {"email": st.secrets["SUPABASE_EMAIL"], "password": st.secrets["SUPABASE_PASSWORD"]}
+    {"email": st.secrets["SUPABASE_EMAIL"], "password": st.secrets["SUPABASE_PASSWORD"]}
+)
+USER_ID = user_data.user.id
+session = user_data.session
+supabase.auth.set_session(
+    access_token=session.access_token, refresh_token=session.refresh_token
+)
 
 
 def create_anchor_from_text(text: str | None) -> str:
@@ -254,6 +277,45 @@ def response_generator(user_query: str, party: str):
         yield stream
 
 
+def save_query(user_query: str, parties: list[str]) -> int:
+    response = (
+        supabase.table("queries")
+        .insert(
+            {
+                "query": user_query,
+                "parties": parties,
+                "environment": ENVIRONMENT,
+                "user_id": USER_ID,
+            }
+        )
+        .execute()
+    )
+    return response.data[0]["id"]
+
+
+def save_response(
+    query_id: int,
+    response: str,
+    party: str,
+    prompt: str,
+):
+    response = (
+        supabase.table("responses")
+        .insert(
+            {
+                "response": response,
+                "party": party,
+                "prompt": prompt,
+                "environment": ENVIRONMENT,
+                "query_id": query_id,
+                "user_id": USER_ID,
+            }
+        )
+        .execute()
+    )
+    return response.data[0]["id"]
+
+
 @st.dialog("Nutzungsbedingungen")
 def accept_policy():
     st.markdown(
@@ -302,19 +364,28 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], **chat_message_kwargs):
         st.markdown(message["content"])
 
-if prompt := st.chat_input(
+user_query = st.chat_input(
     f"Deine Frage an ChatBTW",
-):
-    # Display user message in chat message container
+)
+
+if user_query or st.session_state.get("sample_query", None):
+
+    if st.session_state.get("sample_query", None):
+        print("Got sample query")
+        user_query = st.session_state.pop("sample_query")
+    else:
+        print("Got user query")
+        st.session_state.messages.append({"role": "user", "content": user_query})
+        query_id = save_query(user_query, st.session_state.party_selection)
+
     with st.chat_message("user"):
-        st.markdown(prompt)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+        st.markdown(user_query)
 
     for party in st.session_state.party_selection:
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
             response_stream = response_generator(user_query=prompt, party=party)
             response = st.write_stream(response_stream)
+            response_id = save_response(query_id=query_id, response=response, party=party, prompt="n/a")
         st.session_state.messages.append(
             {
                 "role": "assistant",
