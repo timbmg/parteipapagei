@@ -1,7 +1,8 @@
+import logging
 import os
 import re
 from functools import cache
-from typing import Optional
+from typing import Any, cast, Optional
 
 import chromadb
 import streamlit as st
@@ -19,17 +20,21 @@ from llama_index.core.bridge.pydantic import Field
 from llama_index.core.vector_stores import MetadataFilter, MetadataFilters
 from llama_index.core.retrievers import QueryFusionRetriever
 from llama_index.core import QueryBundle
+from llama_index.core.llms import ChatMessage
 from llama_index.core.postprocessor.types import BaseNodePostprocessor
 from llama_index.core.schema import NodeWithScore
 from llama_index.core.instrumentation.events.base import BaseEvent
 from llama_index.core.instrumentation.event_handlers import BaseEventHandler
 from llama_index.core.instrumentation.events.llm import LLMChatStartEvent
+from llama_index.core.callbacks import CallbackManager
+from llama_index.core.callbacks.base_handler import BaseCallbackHandler
 from llama_index.embeddings.gemini import GeminiEmbedding
 from llama_index.llms.gemini import Gemini
 from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from supabase import create_client, Client
 from streamlit_cookies_controller import CookieController
+from llama_index.core.callbacks.schema import CBEventType, EventPayload
 
 from party_data import party_data
 
@@ -85,6 +90,54 @@ supabase.auth.set_session(
 )
 
 
+class PromptCallbackHandler(BaseCallbackHandler):
+    def __init__(
+        self,
+        event_starts_to_ignore: Optional[list[CBEventType]] = None,
+        event_ends_to_ignore: Optional[list[CBEventType]] = None,
+        logger: Optional[logging.Logger] = None,
+    ) -> None:
+        self.logger: Optional[logging.Logger] = logger
+        super().__init__(
+            event_starts_to_ignore=event_starts_to_ignore or [],
+            event_ends_to_ignore=event_ends_to_ignore or [],
+        )
+        self.last_prompt = None
+
+    def start_trace(self, trace_id: Optional[str] = None) -> None:
+        return
+
+    def end_trace(
+        self,
+        trace_id: Optional[str] = None,
+        trace_map: Optional[dict[str, list[str]]] = None,
+    ) -> None:
+        return
+
+    def on_event_start(
+        self,
+        event_type: CBEventType,
+        payload: Optional[dict[str, Any]] = None,
+        event_id: str = "",
+        parent_id: str = "",
+        **kwargs: Any,
+    ) -> str:
+
+        if (
+            event_type == CBEventType.LLM
+            and payload is not None
+            and EventPayload.MESSAGES in payload
+        ):
+            messages = cast(list[ChatMessage], payload.get(EventPayload.MESSAGES, []))
+            messages_str = "\n".join([str(x) for x in messages])
+            self.last_prompt = messages_str
+
+        return event_id
+
+    def on_event_end(self, event_type, payload=None, event_id="", **kwargs):
+        return
+
+
 def create_anchor_from_text(text: str | None) -> str:
     # based on https://github.com/streamlit/streamlit/blob/833efa9fe408c692906bd07b201b5e715bcceae2/frontend/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown.tsx#L121-L137
     new_anchor = ""
@@ -97,6 +150,7 @@ def create_anchor_from_text(text: str | None) -> str:
         # If the text is not valid ASCII, use a hash of the text
         new_anchor = xxhash.xxh32(text, seed=0xABCD).hexdigest()[:16]
     return new_anchor
+
 
 class ExampleEventHandler(BaseEventHandler):
     events: list[BaseEvent] = []
@@ -112,13 +166,14 @@ class ExampleEventHandler(BaseEventHandler):
             # print(event.span_id, flush=True)
 
             # # event specific attributes
-            print(event.messages, flush=True)
+            # print(event.messages, flush=True)
             # print(event.additional_kwargs, flush=True)
             # print(event.model_dict, flush=True)
             # print("-----------------------", flush=True)
-            # pass
+            pass
 
         self.events.append(event)
+
 
 dispatcher = instrument.get_dispatcher()
 dispatcher.add_event_handler(ExampleEventHandler())
@@ -153,9 +208,11 @@ def init_query_engines():
     chroma_collection = db.get_or_create_collection(CHROMA_COLLECTION)
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     index = VectorStoreIndex.from_vector_store(vector_store)
+    prompt_callback_handler = PromptCallbackHandler()
+    callback_manager = CallbackManager([prompt_callback_handler])
 
     engines = {}
-    for party in ["cdu", "afd", "fdp", "grüne", "spd"]:
+    for party in party_data.keys():
         filters = MetadataFilters(
             filters=[
                 MetadataFilter(key="party", value=party),
@@ -184,7 +241,9 @@ def init_query_engines():
         )
 
         # configure response synthesizer
-        response_synthesizer = get_response_synthesizer(streaming=True)
+        response_synthesizer = get_response_synthesizer(
+            streaming=True, callback_manager=callback_manager
+        )
 
         # assemble query engine
         query_engine = RetrieverQueryEngine(
@@ -446,11 +505,14 @@ user_query = st.chat_input(
 
 if user_query or st.session_state.get("sample_query", None):
 
+    query_type = None
     if st.session_state.get("sample_query", None):
         print("Got sample query")
+        query_type = "sample"
         user_query = st.session_state.pop("sample_query")
     else:
         print("Got user query")
+        query_type = "user"
         st.session_state.messages.append({"role": "user", "content": user_query})
         query_id = save_query(user_query, st.session_state.party_selection)
 
@@ -461,7 +523,11 @@ if user_query or st.session_state.get("sample_query", None):
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
             response_stream = response_generator(user_query=user_query, party=party)
             response = st.write_stream(response_stream)
-            response_id = save_response(query_id=query_id, response=response, party=party, prompt="n/a")
+        if query_type == "user":
+            prompt = ENGINES[party].callback_manager.handlers[0].last_prompt
+            response_id = save_response(
+                query_id=query_id, response=response, party=party, prompt=prompt
+            )
         st.session_state.messages.append(
             {
                 "role": "assistant",
