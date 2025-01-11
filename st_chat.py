@@ -33,10 +33,21 @@ from streamlit_cookies_controller import CookieController
 
 from party_data import party_data
 
+POLICY = """
+    Bitte akzeptiere die Nutzungsbedingungen um ChatBTW zu verwenden.  
+    
+    ⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Partein. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
+
+    ☑️ Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden.  
+
+    🔬 Es werden keine personenbezogenen Daten gespeichert. Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW und für wissenschaftliche Zwecke ausgewertet und veröffentlicht werden.  
+
+    Mit der Nutzung von ChatBTW stimmst Du diesen Bedingungen zu.
+"""
+
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 GEMINI_LLM_MODEL = "models/gemini-1.5-flash-002"
 GEMINI_EMBEDDING_MODEL = "models/text-embedding-004"
-
 QUERY_GEN_PROMPT = """Du bist ein hilfreicher Assistent, der basierend auf einer Frage 
 eines Bürgers zum Wahlprogrammen einer Partei ähnliche Fragen erstellt. Überlege dir 
 unterschiedliche Formulierungen und weitere Fragen um relevante Informationen aus dem
@@ -93,18 +104,19 @@ class ExampleEventHandler(BaseEventHandler):
     def handle(self, event: BaseEvent, **kwargs) -> None:
         """Logic for handling event."""
         if isinstance(event, LLMChatStartEvent):
-            print("-----------------------", flush=True)
-            # all events have these attributes
-            print(event.class_name(), flush=True)
-            print(event.id_, flush=True)
-            print(event.timestamp, flush=True)
-            print(event.span_id, flush=True)
+            # print("-----------------------", flush=True)
+            # # all events have these attributes
+            # print(event.class_name(), flush=True)
+            # print(event.id_, flush=True)
+            # print(event.timestamp, flush=True)
+            # print(event.span_id, flush=True)
 
-            # event specific attributes
+            # # event specific attributes
             print(event.messages, flush=True)
-            print(event.additional_kwargs, flush=True)
-            print(event.model_dict, flush=True)
-            print("-----------------------", flush=True)
+            # print(event.additional_kwargs, flush=True)
+            # print(event.model_dict, flush=True)
+            # print("-----------------------", flush=True)
+            # pass
 
         self.events.append(event)
 
@@ -229,6 +241,8 @@ def response_generator(user_query: str, party: str):
     while True:
         try:
             stream = next(message_iter)
+            # print("-" * 80)
+            # print("Stream:", stream)
         except StopIteration:
             break
         fragments = list(
@@ -306,19 +320,7 @@ def save_response(
 
 @st.dialog("Nutzungsbedingungen")
 def accept_policy():
-    st.markdown(
-        """
-        Bitte akzeptiere die Nutzungsbedingungen um ChatBTW zu verwenden.  
-        
-        ⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Partein. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
-
-        ☑️ Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden.  
-
-        🔬 Es werden keine personenbezogenen Daten gespeichert. Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW und für wissenschaftliche Zwecke ausgewertet und veröffentlicht werden.  
-
-        Mit der Nutzung von ChatBTW stimmst Du diesen Bedingungen zu.
-        """
-    )
+    st.markdown(POLICY)
     if st.button("Akzeptieren", type="primary"):
         print("Accepted clicked.")
         controller.set("policy-accepted", True)
@@ -457,7 +459,7 @@ if user_query or st.session_state.get("sample_query", None):
 
     for party in st.session_state.party_selection:
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
-            response_stream = response_generator(user_query=prompt, party=party)
+            response_stream = response_generator(user_query=user_query, party=party)
             response = st.write_stream(response_stream)
             response_id = save_response(query_id=query_id, response=response, party=party, prompt="n/a")
         st.session_state.messages.append(
