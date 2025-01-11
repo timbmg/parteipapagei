@@ -35,8 +35,7 @@ Genau deshalb braucht Deutschland in dieser schwierigen Zeit eine starke SPD:
 Zupackende Politik für die breite Mehrheit der Bürgerinnen und Bürger, die unser Land am Laufen halten und für diejenigen, die nicht auf der Sonnenseite des Lebens stehen.
 Politik mit Maß und Mitte, die verbindet und nicht spaltet.
 Darauf kommt es jetzt an.
-Darüber entscheiden die Wählerinnen und Wähler bei der Bundestagswahl am 23. Februar
-2025.
+Darüber entscheiden die Wählerinnen und Wähler bei der Bundestagswahl am 23. Februar 2025.
 # Ein neuer Aufschwung für Deutschland
 Viele Menschen machen sich derzeit Sorgen um die Wirtschaft in unserem Land. Oder noch schlimmer: Man sorgt sich um den eigenen Arbeitsplatz. Es geht um Fragen der Wettbewerbsfähigkeit im globalen Wettstreit moderner industrieller Produktionsstandorte. Es geht aber auch um die richtigen Strategien, den Fachkräftebedarf im Handel, in der Gastronomie und in der Verwaltung zu sichern. Und es geht nicht zuletzt um Fragen von Bildung, Ausbildung und Weiterbildung, zum Beispiel im Handwerk.
 Wir stehen für eine Wirtschaftspolitik, die Wachstum, soziale Gerechtigkeit und Nachhaltigkeit miteinander verbindet.Wir gestalten einen Aufschwung, der bei allen Menschen ankommt.Dafür investieren wir in die Zukunft – in Bildung, Innovation, Digitalisierung und Klimaschutz. Wir sorgen dafür, dass unsere Kinder auch in 30 Jahren noch Straßen, Brücken und Schienen nutzen können, und modernisieren unsere Infrastrukturen. Diese Investitionen sind einerseits generationengerecht und sie sind andererseits die Grundbedingung dafür, dass Unternehmen in Deutschland wettbewerbsfähig bleiben können.
