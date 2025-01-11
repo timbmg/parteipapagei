@@ -77,10 +77,8 @@ supabase.auth.set_session(
 def create_anchor_from_text(text: str | None) -> str:
     # based on https://github.com/streamlit/streamlit/blob/833efa9fe408c692906bd07b201b5e715bcceae2/frontend/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown.tsx#L121-L137
     new_anchor = ""
-    
     # Check if the text is valid ASCII characters
     is_ascii = text and all(ord(c) < 128 for c in text)
-    
     if is_ascii and text:
         new_anchor = text.lower().replace(" ", "-").replace("--", "-")
         new_anchor = re.sub(r"[.,:\!\?]", "", new_anchor)
@@ -121,7 +119,6 @@ class RankCutoffPostprocessor(BaseNodePostprocessor):
         self, nodes: list[NodeWithScore], query_bundle: Optional[QueryBundle]
     ) -> list[NodeWithScore]:
         sorted_nodes = sorted(nodes, key=lambda x: x.score, reverse=True)
-        print(f"CUTTING OFF from {len(sorted_nodes)} to {self.rank_cutoff}")
         return sorted_nodes[: self.rank_cutoff]
 
 
@@ -140,7 +137,6 @@ def init_query_engines():
 
     Settings.llm = Gemini(model=GEMINI_LLM_MODEL)
     Settings.embed_model = GeminiEmbedding(model=GEMINI_EMBEDDING_MODEL)
-    
     db = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
     chroma_collection = db.get_or_create_collection(CHROMA_COLLECTION)
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
@@ -228,14 +224,6 @@ ENGINES = init_query_engines()
 def response_generator(user_query: str, party: str):
     print(f"Party: {party} Query: {user_query}")
     response = ENGINES[party].query(user_query)
-
-    for node in response.source_nodes:
-        n = node.to_dict()
-        text = n["node"]["text"]
-        score = n["score"]
-        id_ = n["node"]["id_"]
-        header = n["node"]["metadata"]["header"]
-        print(f"ID: {id_}, Score: {score:0.4f}, Header: {header[:50]}, Text: {text[:100]}")
 
     message_iter = iter(response.response_gen)
     while True:
@@ -345,11 +333,70 @@ if not controller.get("policy-accepted"):
     accept_policy()
 else:
     print(f"Policy already accepted {controller.get('policy-accepted')}")
+
+header = st.container(key="container-header")
+st.markdown(
+    """<style>
+    .block-container {
+        padding-top: 1.5rem;
+    }
+    div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
+        position: sticky;
+        top: 2.875rem;
+        background-color: white;
+        z-index: 999;
+    }
+    div[data-testid="stColumn"] {
+        width: fit-content !important;
+        flex: unset;
+    }
+    div[data-testid="stColumn"] * {
+        margin-top: 0 !important;
+        width: fit-content !important;
+    }
+    div.st-key-btn-party-selection-help button {
+        border: none !important;
+        margin-left: -0.975rem;
+    }
+    div.st-key-btn-party-selection-help button:hover {
+        cursor: help !important;
+    }
+    button[data-testid="stBaseButton-segmented_control"],
+    button[data-testid="stBaseButton-segmented_controlActive"] {
+        line-height: 1.6;
+        min-height: 2.5rem;
+    }
+</style>""",
+    unsafe_allow_html=True,
+)
+header.write("<div class='fixed-header'/>", unsafe_allow_html=True)
+header.title("🗳️ ChatBTW")
+control_cols = header.columns(3, gap="small", vertical_alignment="bottom", border=False)
+control_cols[0].button(
+    "💬 Neuer Chat",
+    on_click=lambda: st.session_state.pop("messages", None),
+    # disable if no messages
+    disabled="messages" not in st.session_state,
+    type="secondary",
+)
+
+control_cols[1].segmented_control(
+    label=None,
+    # label="Partei Auswahl",
+    # label_visibility="hidden",
     options=[party for party, data in party_data.items() if data["enabled"]],
     format_func=lambda p: f"{party_data[p]['emoji']} {party_data[p]['name']}",
     selection_mode="multi",
     default=["cdu", "spd"],
     key="party_selection",
+)
+control_cols[2].button(
+    label="",
+    key="btn-party-selection-help",
+    icon=":material/help:",
+    help="Wähle die Partein mit denen Du dich über ihr Programm unterhalten willst.",
+    type="secondary",
+    disabled=True,
 )
 
 if "messages" not in st.session_state:
@@ -360,9 +407,36 @@ for message in st.session_state.messages:
     if message["role"] == "assistant":
         chat_message_kwargs = {"avatar": party_data[message["party"]]["emoji"]}
     else:
+        if len(st.session_state.messages) == 1 and message["role"] == "user":
+            continue
         chat_message_kwargs = {}
     with st.chat_message(message["role"], **chat_message_kwargs):
         st.markdown(message["content"])
+
+if len(st.session_state.get("messages", [])) == 0:
+    # show example questions
+    st.info(
+        "_Stelle eine eigene Frage oder wähle aus den Beispielen. ChatBTW wird eine Antwort für die Partein basierend auf deren Wahlprogrammen generieren._",
+        icon=":material/info:",
+    )
+
+    sample_questions = [
+        "Was ist ihr Plan um Deutschlands Wirtschaft wieder wachsen zu lassen?",
+        "Wie sieht ihre Zuwanderungspolitik aus?",
+        "Wie kann Klimaschutz und Wirtschaftswachstum vereint werden?",
+        "Wie kann die Digitalisierung in Deutschland vorangetrieben werden?",
+    ]
+    sample_question_cols = st.columns(len(sample_questions), gap="small")
+    for col, question in zip(sample_question_cols, sample_questions):
+        if col.button(
+            question,
+            type="secondary",
+        ):
+            print(f"Clicked on sample question {question}")
+            st.session_state.messages.append({"role": "user", "content": question})
+            st.session_state.sample_query = question
+            print(f"Rerunning because of sample query click. ({question})")
+            st.rerun()
 
 user_query = st.chat_input(
     f"Deine Frage an ChatBTW",
