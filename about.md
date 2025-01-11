@@ -14,6 +14,10 @@ Als Suche nutzt ChatBTW dabei zum einem eine Schlagwort Suche (BM25 [[2](#refBM2
 ### Generierung
 Die Passagen aus dem Wahlprgramm die durch die Suche gefunden wurden, werden dann genutzt um eine Antwort zu generieren. Dabei wird ein Large Language Model (LLM) genutzt. In ChatBTW wird Google's Gemini Model (`models/gemini-1.5-flash-002`) [[5](#refGemini)] verwendet. Dabei handelt es sich vermutlich um ein relativ kleines Model, das zwar nicht so leistungsstark wie größere Modelle ist, aber in gewissen Maße kostenlos genutzt werden kann. Außer der Generierung der Antwort, wird das Model instruiert die Passagen aus dem Wahlprogramm zu zitieren. Diese werden dann als Links in der Antwort angezeigt, so dass der Nutzer die Quelle überprüfen kann.
 
+### Einschränkungen
+- ChatBTW besitzt kein "Gedächtniss" und berücksichtigt nicht Kontext (also die vorherigen Nachrichten).
+- Erfahrungsgemäß funktionieren sehr allgemein gehaltene Fragen weniger gut.
+
 # Referenzen
 
 <a name="refRAG"></a>[1] Lewis, Patrick, et al. ["Retrieval-augmented generation for knowledge-intensive nlp tasks."](https://proceedings.neurips.cc/paper_files/paper/2020/file/6b493230205f780e1bc26945df7481e5-Paper.pdf) Advances in Neural Information Processing Systems 33 (2020): 9459-9474.
