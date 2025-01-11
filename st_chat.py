@@ -28,6 +28,7 @@ from llama_index.embeddings.gemini import GeminiEmbedding
 from llama_index.llms.gemini import Gemini
 from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.vector_stores.chroma import ChromaVectorStore
+from streamlit_cookies_controller import CookieController
 
 from party_data import party_data
 
@@ -42,6 +43,13 @@ Wahlprogramm zu finden, die für die beantwortung der Frage nützlich sind. Gene
 insgesamt {num_queries} Fragen, jede in einer eigenen Zeile, basierend auf der 
 folgenden Frage: '{query}'\nGenerierte Fragen:\n"
 """
+controller = CookieController()
+import time
+
+time.sleep(
+    0.2
+)  # we need to wait for the cookie to be set, otherwise the cookie dialog will be shown again
+
 
 def create_anchor_from_text(text: str | None) -> str:
     # based on https://github.com/streamlit/streamlit/blob/833efa9fe408c692906bd07b201b5e715bcceae2/frontend/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown.tsx#L121-L137
@@ -246,10 +254,35 @@ def response_generator(user_query: str, party: str):
         yield stream
 
 
-st.title("🗳️ ChatBTW")
+@st.dialog("Nutzungsbedingungen")
+def accept_policy():
+    st.markdown(
+        """
+        Bitte akzeptiere die Nutzungsbedingungen um ChatBTW zu verwenden.  
+        
+        ⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Partein. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
 
-st.segmented_control(
-    label="Wähle Partein über deren Programm Du mehr erfahren willst.",
+        ☑️ Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden.  
+
+        🔬 Es werden keine personenbezogenen Daten gespeichert. Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW und für wissenschaftliche Zwecke ausgewertet und veröffentlicht werden.  
+
+        Mit der Nutzung von ChatBTW stimmst Du diesen Bedingungen zu.
+        """
+    )
+    if st.button("Akzeptieren", type="primary"):
+        print("Accepted clicked.")
+        controller.set("policy-accepted", True)
+        print("Set policy cookie.")
+        st.rerun()
+    else:
+        st.stop()
+
+
+if not controller.get("policy-accepted"):
+    print(f"Policy not accepted {controller.get('policy-accepted')}")
+    accept_policy()
+else:
+    print(f"Policy already accepted {controller.get('policy-accepted')}")
     options=[party for party, data in party_data.items() if data["enabled"]],
     format_func=lambda p: f"{party_data[p]['emoji']} {party_data[p]['name']}",
     selection_mode="multi",
