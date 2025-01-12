@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import time
 from functools import cache
 from typing import Any, cast, Optional
 
@@ -39,164 +40,64 @@ from llama_index.core.callbacks.schema import CBEventType, EventPayload
 from party_data import party_data
 
 POLICY = """
-    Bitte akzeptiere die Nutzungsbedingungen um ChatBTW zu verwenden.  
+Bitte akzeptiere die Nutzungsbedingungen um ChatBTW zu verwenden.  
     
-    ⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Partein. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
+⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Partein. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
 
-    ☑️ Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden.  
+☑️ Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden.  
 
-    🔬 Es werden keine personenbezogenen Daten gespeichert. Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW und für wissenschaftliche Zwecke ausgewertet und veröffentlicht werden.  
+🔬 Es werden keine personenbezogenen Daten gespeichert. Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW und für wissenschaftliche Zwecke ausgewertet und veröffentlicht werden.  
 
-    Mit der Nutzung von ChatBTW stimmst Du diesen Bedingungen zu.
+Mit der Nutzung von ChatBTW stimmst Du diesen Bedingungen zu.
 """
 
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 GEMINI_LLM_MODEL = "models/gemini-1.5-flash-002"
 GEMINI_EMBEDDING_MODEL = "models/text-embedding-004"
+
 QUERY_GEN_PROMPT = """Du bist ein hilfreicher Assistent, der basierend auf einer Frage 
-eines Bürgers zum Wahlprogrammen einer Partei ähnliche Fragen erstellt. Überlege dir 
-unterschiedliche Formulierungen und weitere Fragen um relevante Informationen aus dem
-Wahlprogramm zu finden, die für die beantwortung der Frage nützlich sind. Generiere 
-insgesamt {num_queries} Fragen, jede in einer eigenen Zeile, basierend auf der 
-folgenden Frage: '{query}'\nGenerierte Fragen:\n"
+eines Bürgers zum Wahlprogrammen einer Partei ähnliche Fragen generiert. Überlege dir 
+unterschiedliche Formulierungen der selben Frage und weitere verwandte Fragen um relevante 
+Informationen aus dem Wahlprogramm zu finden, die für die beantwortung der 
+ursprünglichen Frage nützlich sind. Generiere insgesamt {num_queries} Fragen, jede in 
+einer eigenen Zeile.\n
+Frage: {query}\n
+Generierte Fragen:\n
 """
+QA_PROMPT = """Du bist Politker der {party}. 
+Ein Bürger möchte etwas über euer Wahlprogramm zur Bundestagswahl 2025 wissen. 
+Relevante Passagen aus dem Wahlprogramm sind unten aufgeführt.\n
+---------------------\n
+{context_str}\n
+---------------------\n
+Beantworte die Frage basierend auf den Informationen im Wahlprogramm. 
+Überlege wie die Informationen im Wahlprogramm auf die Frage des Bürgers anwendbar sind.\n
+Falls die Inhalte des Wahlprogramms nicht relevant sind, 
+antworte dem Bürger das die {party} keine Position zu diesem Thema im Wahlprogramm hat.\n
+Füge jeder deiner Aussagen eine Referenz hinzu, auf welche Passage aus dem Wahlprogramm diese zurück zu führen ist. 
+Verwende dazu die folgendes Format: <Antwort> [X, Y]' 
+um zu belegen, dass deine Antwort sich auf Passagen X und Y zurück zu führen ist.\n
+Halten deine Antwort kurz und prägnant, um den Bürger zu überzeugen.\n
+Bürger Frage: {query_str}\n
+Deine Politker Antwort: 
+"""
+
 ENVIRONMENT = "test"
 
 
 controller = CookieController()
-import time
-
-time.sleep(
-    0.2
-)  # we need to wait for the cookie to be set, otherwise the cookie dialog will be shown again
+# we need to wait for the cookie to be set, otherwise the cookie dialog will be shown again
+time.sleep(0.2)
 
 
 @st.cache_resource
-def init_connection() -> Client:
+def init_supabase_connection() -> Client:
     url = st.secrets["SUPABASE_URL"]
     key = st.secrets["SUPABASE_KEY"]
     return create_client(url, key)
 
 
-supabase = init_connection()
-user_data = supabase.auth.sign_in_with_password(
-    # {"email": st.secrets["SUPABASE_EMAIL"], "password": st.secrets["SUPABASE_PASSWORD"]}
-    {"email": st.secrets["SUPABASE_EMAIL"], "password": st.secrets["SUPABASE_PASSWORD"]}
-)
-USER_ID = user_data.user.id
-session = user_data.session
-supabase.auth.set_session(
-    access_token=session.access_token, refresh_token=session.refresh_token
-)
-
-
-class PromptCallbackHandler(BaseCallbackHandler):
-    def __init__(
-        self,
-        event_starts_to_ignore: Optional[list[CBEventType]] = None,
-        event_ends_to_ignore: Optional[list[CBEventType]] = None,
-        logger: Optional[logging.Logger] = None,
-    ) -> None:
-        self.logger: Optional[logging.Logger] = logger
-        super().__init__(
-            event_starts_to_ignore=event_starts_to_ignore or [],
-            event_ends_to_ignore=event_ends_to_ignore or [],
-        )
-        self.last_prompt = None
-
-    def start_trace(self, trace_id: Optional[str] = None) -> None:
-        return
-
-    def end_trace(
-        self,
-        trace_id: Optional[str] = None,
-        trace_map: Optional[dict[str, list[str]]] = None,
-    ) -> None:
-        return
-
-    def on_event_start(
-        self,
-        event_type: CBEventType,
-        payload: Optional[dict[str, Any]] = None,
-        event_id: str = "",
-        parent_id: str = "",
-        **kwargs: Any,
-    ) -> str:
-
-        if (
-            event_type == CBEventType.LLM
-            and payload is not None
-            and EventPayload.MESSAGES in payload
-        ):
-            messages = cast(list[ChatMessage], payload.get(EventPayload.MESSAGES, []))
-            messages_str = "\n".join([str(x) for x in messages])
-            self.last_prompt = messages_str
-
-        return event_id
-
-    def on_event_end(self, event_type, payload=None, event_id="", **kwargs):
-        return
-
-
-def create_anchor_from_text(text: str | None) -> str:
-    # based on https://github.com/streamlit/streamlit/blob/833efa9fe408c692906bd07b201b5e715bcceae2/frontend/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown.tsx#L121-L137
-    new_anchor = ""
-    # Check if the text is valid ASCII characters
-    is_ascii = text and all(ord(c) < 128 for c in text)
-    if is_ascii and text:
-        new_anchor = text.lower().replace(" ", "-").replace("--", "-")
-        new_anchor = re.sub(r"[.,:\!\?]", "", new_anchor)
-    elif text:
-        # If the text is not valid ASCII, use a hash of the text
-        new_anchor = xxhash.xxh32(text, seed=0xABCD).hexdigest()[:16]
-    return new_anchor
-
-
-class ExampleEventHandler(BaseEventHandler):
-    events: list[BaseEvent] = []
-
-    def handle(self, event: BaseEvent, **kwargs) -> None:
-        """Logic for handling event."""
-        if isinstance(event, LLMChatStartEvent):
-            # print("-----------------------", flush=True)
-            # # all events have these attributes
-            # print(event.class_name(), flush=True)
-            # print(event.id_, flush=True)
-            # print(event.timestamp, flush=True)
-            # print(event.span_id, flush=True)
-
-            # # event specific attributes
-            # print(event.messages, flush=True)
-            # print(event.additional_kwargs, flush=True)
-            # print(event.model_dict, flush=True)
-            # print("-----------------------", flush=True)
-            pass
-
-        self.events.append(event)
-
-
-dispatcher = instrument.get_dispatcher()
-dispatcher.add_event_handler(ExampleEventHandler())
-
-
-class RankCutoffPostprocessor(BaseNodePostprocessor):
-    rank_cutoff: int = Field(default=10)
-
-    def _postprocess_nodes(
-        self, nodes: list[NodeWithScore], query_bundle: Optional[QueryBundle]
-    ) -> list[NodeWithScore]:
-        sorted_nodes = sorted(nodes, key=lambda x: x.score, reverse=True)
-        return sorted_nodes[: self.rank_cutoff]
-
-
-class CachedQueryFusionRetriever(QueryFusionRetriever):
-
-    @cache
-    def _get_queries(self, original_query: str):
-        return super()._get_queries(original_query)
-
-
-@st.cache_resource
+@st.cache_resource(show_spinner="Lese Wahlprogramme...")
 def init_query_engines():
 
     CHROMA_PERSIST_DIR = "chroma"
@@ -251,24 +152,6 @@ def init_query_engines():
             response_synthesizer=response_synthesizer,
             node_postprocessors=[RankCutoffPostprocessor(rank_cutoff=10)],
         )
-        text_qa_template = (
-            "Du bist Politker der {party}. "
-            "Ein Bürger möchte etwas über euer Wahlprogramm zur Bundestagswahl 2025 wissen. "
-            "Relevante Passagen aus dem Wahlprogramm sind unten aufgeführt.\n"
-            "---------------------\n"
-            "{context_str}\n"
-            "---------------------\n"
-            "Beantworte die Frage basierend auf den Informationen im Wahlprogramm. "
-            "Überlege wie die Informationen im Wahlprogramm auf die Frage des Bürgers anwendbar sind.\n"
-            "Falls die Inhalte des Wahlprogramms nicht relevant sind, "
-            "antworte dem Bürger das die {party} keine Position zu diesem Thema im Wahlprogramm hat.\n"
-            "Füge jeder deiner Aussagen eine Referenz hinzu, auf welche Passage aus dem Wahlprogramm diese zurück zu führen ist. "
-            "Verwende dazu die folgendes Format: <Antwort> [X, Y]' "
-            "um zu belegen, dass deine Antwort sich auf Passagen X und Y zurück zu führen ist.\n"
-            "Halten deine Antwort kurz und prägnant, um den Bürger zu überzeugen.\n"
-            "Bürger Frage: {query_str}\n"
-            "Deine Politker Antwort: "
-        )
 
         def format_context_fn(**kwargs):
             # format context with reference numbers
@@ -279,29 +162,101 @@ def init_query_engines():
             return fmtted_context
 
         text_qa_template = PromptTemplate(
-            text_qa_template, function_mappings={"context_str": format_context_fn}
+            QA_PROMPT, function_mappings={"context_str": format_context_fn}
         ).partial_format(party=party_data[party]["template_name"])
         query_engine.update_prompts(
             {"response_synthesizer:text_qa_template": text_qa_template}
         )
-        print(f"Initialized query engine for party {party}.")
         engines[party] = query_engine
+
     return engines
 
 
-ENGINES = init_query_engines()
+class PromptCallbackHandler(BaseCallbackHandler):
+    def __init__(
+        self,
+        event_starts_to_ignore: Optional[list[CBEventType]] = None,
+        event_ends_to_ignore: Optional[list[CBEventType]] = None,
+        logger: Optional[logging.Logger] = None,
+    ) -> None:
+        self.logger: Optional[logging.Logger] = logger
+        super().__init__(
+            event_starts_to_ignore=event_starts_to_ignore or [],
+            event_ends_to_ignore=event_ends_to_ignore or [],
+        )
+        self.last_prompt = None
+
+    def start_trace(self, trace_id: Optional[str] = None) -> None:
+        return
+
+    def end_trace(
+        self,
+        trace_id: Optional[str] = None,
+        trace_map: Optional[dict[str, list[str]]] = None,
+    ) -> None:
+        return
+
+    def on_event_start(
+        self,
+        event_type: CBEventType,
+        payload: Optional[dict[str, Any]] = None,
+        event_id: str = "",
+        parent_id: str = "",
+        **kwargs: Any,
+    ) -> str:
+
+        if (
+            event_type == CBEventType.LLM
+            and payload is not None
+            and EventPayload.MESSAGES in payload
+        ):
+            messages = cast(list[ChatMessage], payload.get(EventPayload.MESSAGES, []))
+            messages_str = "\n".join([str(x) for x in messages])
+            self.last_prompt = messages_str
+
+        return event_id
+
+    def on_event_end(self, event_type, payload=None, event_id="", **kwargs):
+        return
 
 
-def response_generator(user_query: str, party: str):
-    print(f"Party: {party} Query: {user_query}")
-    response = ENGINES[party].query(user_query)
+class RankCutoffPostprocessor(BaseNodePostprocessor):
+    rank_cutoff: int = Field(default=10)
+
+    def _postprocess_nodes(
+        self, nodes: list[NodeWithScore], query_bundle: Optional[QueryBundle]
+    ) -> list[NodeWithScore]:
+        sorted_nodes = sorted(nodes, key=lambda x: x.score, reverse=True)
+        return sorted_nodes[: self.rank_cutoff]
+
+
+class CachedQueryFusionRetriever(QueryFusionRetriever):
+
+    @cache
+    def _get_queries(self, original_query: str):
+        return super()._get_queries(original_query)
+
+
+def create_anchor_from_text(text: str | None) -> str:
+    # based on https://github.com/streamlit/streamlit/blob/833efa9fe408c692906bd07b201b5e715bcceae2/frontend/lib/src/components/shared/StreamlitMarkdown/StreamlitMarkdown.tsx#L121-L137
+    new_anchor = ""
+    # Check if the text is valid ASCII characters
+    is_ascii = text and all(ord(c) < 128 for c in text)
+    if is_ascii and text:
+        new_anchor = text.lower().replace(" ", "-").replace("--", "-")
+        new_anchor = re.sub(r"[.,:\!\?]", "", new_anchor)
+    elif text:
+        # If the text is not valid ASCII, use a hash of the text
+        new_anchor = xxhash.xxh32(text, seed=0xABCD).hexdigest()[:16]
+    return new_anchor
+
+
+def response_generator(response, party: str):
 
     message_iter = iter(response.response_gen)
     while True:
         try:
             stream = next(message_iter)
-            # print("-" * 80)
-            # print("Stream:", stream)
         except StopIteration:
             break
         fragments = list(
@@ -376,6 +331,25 @@ def save_response(
     )
     return response.data[0]["id"]
 
+def sample_question_click(question):
+    st.session_state.messages.append({"role": "user", "content": question})
+    st.session_state.sample_query = question
+
+def new_chat_click():
+    st.session_state.messages = []
+
+supabase = init_supabase_connection()
+user_data = supabase.auth.sign_in_with_password(
+    {"email": st.secrets["SUPABASE_EMAIL"], "password": st.secrets["SUPABASE_PASSWORD"]}
+)
+USER_ID = user_data.user.id
+session = user_data.session
+supabase.auth.set_session(
+    access_token=session.access_token, refresh_token=session.refresh_token
+)
+
+engines = init_query_engines()
+
 
 @st.dialog("Nutzungsbedingungen")
 def accept_policy():
@@ -435,9 +409,8 @@ header.title("🗳️ ChatBTW")
 control_cols = header.columns(3, gap="small", vertical_alignment="bottom", border=False)
 control_cols[0].button(
     "💬 Neuer Chat",
-    on_click=lambda: st.session_state.pop("messages", None),
-    # disable if no messages
-    disabled="messages" not in st.session_state,
+    on_click=new_chat_click,
+    disabled=len(st.session_state.get("messages", [])) == 0,
     type="secondary",
 )
 
@@ -499,9 +472,7 @@ if len(st.session_state.get("messages", [])) == 0:
             print(f"Rerunning because of sample query click. ({question})")
             st.rerun()
 
-user_query = st.chat_input(
-    f"Deine Frage an ChatBTW",
-)
+user_query = st.chat_input(f"Deine Frage an ChatBTW")
 
 if user_query or st.session_state.get("sample_query", None):
 
@@ -521,10 +492,11 @@ if user_query or st.session_state.get("sample_query", None):
 
     for party in st.session_state.party_selection:
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
-            response_stream = response_generator(user_query=user_query, party=party)
+            engine_response = engines[party].query(user_query)
+            response_stream = response_generator(response=engine_response, party=party)
             response = st.write_stream(response_stream)
         if query_type == "user":
-            prompt = ENGINES[party].callback_manager.handlers[0].last_prompt
+            prompt = engines[party].callback_manager.handlers[0].last_prompt
             response_id = save_response(
                 query_id=query_id, response=response, party=party, prompt=prompt
             )
