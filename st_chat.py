@@ -343,7 +343,7 @@ def add_user_query_to_session():
 
 
 def pretty_print_messages():
-    for message in st.session_state.messages:
+    for message in st.session_state.get("messages", []):
         print(message["role"], "::", message["content"][:20])
 
 supabase = init_supabase_connection()
