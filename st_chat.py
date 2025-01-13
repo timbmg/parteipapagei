@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import time
+import uuid
 from functools import cache
 from typing import Any, Optional, cast
 
@@ -77,7 +78,7 @@ Deine Politker Antwort:
 ENVIRONMENT = "test"
 
 
-controller = CookieController()
+cookie_controller = CookieController()
 # we need to wait for the cookie to be set, otherwise the cookie dialog will be shown again
 time.sleep(0.2)
 
@@ -346,6 +347,13 @@ def pretty_print_messages():
     for message in st.session_state.get("messages", []):
         print(message["role"], "::", message["content"][:20])
 
+
+print("RERUN.")
+pretty_print_messages()
+
+if cookie_controller.get("pseudo-user-id") is None:
+    cookie_controller.set("pseudo-user-id", str(uuid.uuid4()))
+
 supabase = init_supabase_connection()
 user_data = supabase.auth.sign_in_with_password(
     {"email": st.secrets["SUPABASE_EMAIL"], "password": st.secrets["SUPABASE_PASSWORD"]}
@@ -361,23 +369,22 @@ engines = init_query_engines()
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+
 @st.dialog("Nutzungsbedingungen")
 def accept_policy():
     st.markdown(POLICY)
     if st.button("Akzeptieren", type="primary"):
-        print("Accepted clicked.")
-        controller.set("policy-accepted", True)
-        print("Set policy cookie.")
+        cookie_controller.set("policy-accepted", True)
         st.rerun()
     else:
         st.stop()
 
 
-if not controller.get("policy-accepted"):
-    print(f"Policy not accepted {controller.get('policy-accepted')}")
+if not cookie_controller.get("policy-accepted"):
+    print(f"Policy not accepted {cookie_controller.get('policy-accepted')}")
     accept_policy()
 else:
-    print(f"Policy already accepted {controller.get('policy-accepted')}")
+    print(f"Policy already accepted {cookie_controller.get('policy-accepted')}")
 
 header = st.container(key="container-header")
 st.markdown(
@@ -464,17 +471,16 @@ if len(st.session_state.messages) == 0:
         )
 else:
     # Display chat messages from history on app rerun
-    print(f"Adding chat messages from history. Num messages: {len(st.session_state.messages)}")
+    print(
+        f"Adding chat messages from history. Num messages: {len(st.session_state.messages)}"
+    )
     pretty_print_messages()
     for message in st.session_state.messages:
         if message["role"] == "assistant":
             chat_message_kwargs = {"avatar": party_data[message["party"]]["emoji"]}
         else:
-            if len(st.session_state.messages) == 1 and message["role"] == "user":
-                continue
             chat_message_kwargs = {}
         with st.chat_message(message["role"], **chat_message_kwargs):
-
             st.markdown(message["content"])
 
 user_query = st.chat_input(
@@ -490,22 +496,18 @@ if user_query or st.session_state.get("sample_query", None):
     else:
         print("Got user query")
         query_type = "user"
-        st.session_state.messages.append({"role": "user", "content": user_query})
-        # query_id = save_query(user_query, st.session_state.party_selection)
-
-    with st.chat_message("user"):
-        st.markdown(user_query)
 
     for party in st.session_state.party_selection:
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
             engine_response = engines[party].query(user_query)
             response_stream = response_generator(response=engine_response, party=party)
             response = st.write_stream(response_stream)
+            st.empty()
         # if query_type == "user":
-            # prompt = engines[party].callback_manager.handlers[0].last_prompt
-            # response_id = save_response(
-            #     query_id=query_id, response=response, party=party, prompt=prompt
-            # )
+        # prompt = engines[party].callback_manager.handlers[0].last_prompt
+        # response_id = save_response(
+        #     query_id=query_id, response=response, party=party, prompt=prompt
+        # )
         st.session_state.messages.append(
             {
                 "role": "assistant",
