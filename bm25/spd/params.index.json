@@ -6,7 +6,7 @@
     "idf_method": "lucene",
     "dtype": "float32",
     "int_dtype": "int32",
-    "num_docs": 114,
+    "num_docs": 120,
     "version": "0.2.6",
     "backend": "numpy"
 }
