@@ -35,7 +35,7 @@ from party_data import party_data
 POLICY = """
 Bitte akzeptiere die Nutzungsbedingungen um ChatBTW zu verwenden.  
     
-⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Partein. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
+⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Parteien. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
 
 ☑️ Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden.  
 
@@ -444,21 +444,21 @@ control_cols[2].button(
     label="",
     key="btn-party-selection-help",
     icon=":material/help:",
-    help="Wähle die Partein mit denen Du dich über ihr Programm unterhalten willst.",
+    help="Wähle die Parteien mit denen Du dich über ihr Programm unterhalten willst.",
     type="secondary",
     disabled=True,
 )
 
 if len(st.session_state.messages) == 0:
     st.info(
-        "_Stelle eine eigene Frage oder wähle aus den Beispielen. ChatBTW wird eine Antwort für die Partein basierend auf deren Wahlprogrammen generieren._",
+        "_Stelle eine eigene Frage oder wähle aus den Beispielen. ChatBTW wird eine Antwort für die Parteien basierend auf deren Wahlprogrammen generieren._",
         icon=":material/info:",
     )
     st.session_state.sample_query = None
     sample_questions = [
-        "Was ist ihr Plan um Deutschlands Wirtschaft wieder wachsen zu lassen?",
+        "Was ist ihr Plan, um Deutschlands Wirtschaft wieder wachsen zu lassen?",
         "Wie sieht ihre Zuwanderungspolitik aus?",
-        "Wie kann Klimaschutz und Wirtschaftswachstum vereint werden?",
+        "Wie können Klimaschutz und Wirtschaftswachstum vereint werden?",
         "Wie kann die Digitalisierung in Deutschland vorangetrieben werden?",
     ]
     sample_question_cols = st.columns(len(sample_questions), gap="small")
