@@ -3,3 +3,7 @@ base="light"
 
 [ui]
 hideTopBar = true
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = "none"
