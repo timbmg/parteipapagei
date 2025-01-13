@@ -335,6 +335,13 @@ def new_chat_click():
     st.session_state.messages = []
 
 
+def add_user_query_to_session():
+    print("Adding user query to session.")
+    st.session_state.messages.append(
+        {"role": "user", "content": st.session_state.user_query}
+    )
+
+
 def pretty_print_messages():
     for message in st.session_state.messages:
         print(message["role"], "::", message["content"][:20])
@@ -449,13 +456,12 @@ if len(st.session_state.messages) == 0:
     ]
     sample_question_cols = st.columns(len(sample_questions), gap="small")
     for col, question in zip(sample_question_cols, sample_questions):
-        if col.button(
+        col.button(
             question,
             type="secondary",
-        ):
-            st.session_state.sample_query = question
-            st.session_state.messages.append({"role": "user", "content": question})
-            st.rerun()
+            on_click=sample_question_click,
+            kwargs={"question": question},
+        )
 else:
     # Display chat messages from history on app rerun
     print(f"Adding chat messages from history. Num messages: {len(st.session_state.messages)}")
@@ -471,7 +477,9 @@ else:
 
             st.markdown(message["content"])
 
-user_query = st.chat_input(f"Deine Frage an ChatBTW")
+user_query = st.chat_input(
+    f"Deine Frage an ChatBTW", on_submit=add_user_query_to_session, key="user_query"
+)
 
 if user_query or st.session_state.get("sample_query", None):
     query_type = None
