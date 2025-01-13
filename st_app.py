@@ -4,7 +4,6 @@ import streamlit as st
 
 from party_data import party_data
 
-
 st.set_page_config(
     page_title="🗳️ ChatBTW",
     page_icon="🗳️",

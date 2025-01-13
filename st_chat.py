@@ -3,37 +3,31 @@ import os
 import re
 import time
 from functools import cache
-from typing import Any, cast, Optional
+from typing import Any, Optional, cast
 
 import chromadb
+import llama_index.core.instrumentation as instrument
 import streamlit as st
 import xxhash
-from llama_index.core import (
-    VectorStoreIndex,
-    Settings,
-    PromptTemplate,
-    get_response_synthesizer,
-)
-import llama_index.core.instrumentation as instrument
-from llama_index.core.retrievers import VectorIndexRetriever
-from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core import (PromptTemplate, QueryBundle, Settings,
+                              VectorStoreIndex, get_response_synthesizer)
 from llama_index.core.bridge.pydantic import Field
-from llama_index.core.vector_stores import MetadataFilter, MetadataFilters
-from llama_index.core.retrievers import QueryFusionRetriever
-from llama_index.core import QueryBundle
-from llama_index.core.llms import ChatMessage
-from llama_index.core.postprocessor.types import BaseNodePostprocessor
-from llama_index.core.schema import NodeWithScore
-
 from llama_index.core.callbacks import CallbackManager
 from llama_index.core.callbacks.base_handler import BaseCallbackHandler
+from llama_index.core.callbacks.schema import CBEventType, EventPayload
+from llama_index.core.llms import ChatMessage
+from llama_index.core.postprocessor.types import BaseNodePostprocessor
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.retrievers import (QueryFusionRetriever,
+                                         VectorIndexRetriever)
+from llama_index.core.schema import NodeWithScore
+from llama_index.core.vector_stores import MetadataFilter, MetadataFilters
 from llama_index.embeddings.gemini import GeminiEmbedding
 from llama_index.llms.gemini import Gemini
 from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.vector_stores.chroma import ChromaVectorStore
-from supabase import create_client, Client
 from streamlit_cookies_controller import CookieController
-from llama_index.core.callbacks.schema import CBEventType, EventPayload
+from supabase import Client, create_client
 
 from party_data import party_data
 
