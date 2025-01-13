@@ -24,9 +24,7 @@ from llama_index.core import QueryBundle
 from llama_index.core.llms import ChatMessage
 from llama_index.core.postprocessor.types import BaseNodePostprocessor
 from llama_index.core.schema import NodeWithScore
-from llama_index.core.instrumentation.events.base import BaseEvent
-from llama_index.core.instrumentation.event_handlers import BaseEventHandler
-from llama_index.core.instrumentation.events.llm import LLMChatStartEvent
+
 from llama_index.core.callbacks import CallbackManager
 from llama_index.core.callbacks.base_handler import BaseCallbackHandler
 from llama_index.embeddings.gemini import GeminiEmbedding
@@ -333,12 +331,19 @@ def save_response(
     )
     return response.data[0]["id"]
 
+
 def sample_question_click(question):
     st.session_state.messages.append({"role": "user", "content": question})
     st.session_state.sample_query = question
 
+
 def new_chat_click():
     st.session_state.messages = []
+
+
+def pretty_print_messages():
+    for message in st.session_state.messages:
+        print(message["role"], "::", message["content"][:20])
 
 supabase = init_supabase_connection()
 user_data = supabase.auth.sign_in_with_password(
@@ -352,6 +357,8 @@ supabase.auth.set_session(
 
 engines = init_query_engines()
 
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 @st.dialog("Nutzungsbedingungen")
 def accept_policy():
@@ -418,12 +425,11 @@ control_cols[0].button(
 
 control_cols[1].segmented_control(
     label=None,
-    # label="Partei Auswahl",
-    # label_visibility="hidden",
     options=[party for party, data in party_data.items() if data["enabled"]],
     format_func=lambda p: f"{party_data[p]['emoji']} {party_data[p]['name']}",
     selection_mode="multi",
-    default=["cdu", "spd"],
+    # default=["cdu", "spd"],
+    default=["spd"],
     key="party_selection",
 )
 control_cols[2].button(
@@ -435,27 +441,12 @@ control_cols[2].button(
     disabled=True,
 )
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display chat messages from history on app rerun
-for message in st.session_state.messages:
-    if message["role"] == "assistant":
-        chat_message_kwargs = {"avatar": party_data[message["party"]]["emoji"]}
-    else:
-        if len(st.session_state.messages) == 1 and message["role"] == "user":
-            continue
-        chat_message_kwargs = {}
-    with st.chat_message(message["role"], **chat_message_kwargs):
-        st.markdown(message["content"])
-
-if len(st.session_state.get("messages", [])) == 0:
-    # show example questions
+if len(st.session_state.messages) == 0:
     st.info(
         "_Stelle eine eigene Frage oder wähle aus den Beispielen. ChatBTW wird eine Antwort für die Partein basierend auf deren Wahlprogrammen generieren._",
         icon=":material/info:",
     )
-
+    st.session_state.sample_query = None
     sample_questions = [
         "Was ist ihr Plan um Deutschlands Wirtschaft wieder wachsen zu lassen?",
         "Wie sieht ihre Zuwanderungspolitik aus?",
@@ -468,16 +459,27 @@ if len(st.session_state.get("messages", [])) == 0:
             question,
             type="secondary",
         ):
-            print(f"Clicked on sample question {question}")
-            st.session_state.messages.append({"role": "user", "content": question})
             st.session_state.sample_query = question
-            print(f"Rerunning because of sample query click. ({question})")
+            st.session_state.messages.append({"role": "user", "content": question})
             st.rerun()
+else:
+    # Display chat messages from history on app rerun
+    print(f"Adding chat messages from history. Num messages: {len(st.session_state.messages)}")
+    pretty_print_messages()
+    for message in st.session_state.messages:
+        if message["role"] == "assistant":
+            chat_message_kwargs = {"avatar": party_data[message["party"]]["emoji"]}
+        else:
+            if len(st.session_state.messages) == 1 and message["role"] == "user":
+                continue
+            chat_message_kwargs = {}
+        with st.chat_message(message["role"], **chat_message_kwargs):
+
+            st.markdown(message["content"])
 
 user_query = st.chat_input(f"Deine Frage an ChatBTW")
 
 if user_query or st.session_state.get("sample_query", None):
-
     query_type = None
     if st.session_state.get("sample_query", None):
         print("Got sample query")
@@ -487,7 +489,7 @@ if user_query or st.session_state.get("sample_query", None):
         print("Got user query")
         query_type = "user"
         st.session_state.messages.append({"role": "user", "content": user_query})
-        query_id = save_query(user_query, st.session_state.party_selection)
+        # query_id = save_query(user_query, st.session_state.party_selection)
 
     with st.chat_message("user"):
         st.markdown(user_query)
@@ -497,11 +499,11 @@ if user_query or st.session_state.get("sample_query", None):
             engine_response = engines[party].query(user_query)
             response_stream = response_generator(response=engine_response, party=party)
             response = st.write_stream(response_stream)
-        if query_type == "user":
-            prompt = engines[party].callback_manager.handlers[0].last_prompt
-            response_id = save_response(
-                query_id=query_id, response=response, party=party, prompt=prompt
-            )
+        # if query_type == "user":
+            # prompt = engines[party].callback_manager.handlers[0].last_prompt
+            # response_id = save_response(
+            #     query_id=query_id, response=response, party=party, prompt=prompt
+            # )
         st.session_state.messages.append(
             {
                 "role": "assistant",
