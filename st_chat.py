@@ -290,7 +290,9 @@ def response_generator(response, party: str):
                 modified_fragment += f"[{parsed_number}]({party}#{_id})"
             stream = stream.replace(fragment, modified_fragment)
 
-        yield stream
+        for word in stream.split():
+            yield word + " "
+            time.sleep(0.025)
 
 
 def save_query(user_query: str, parties: list[str]) -> int:
