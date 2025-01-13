@@ -24,5 +24,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "black>=24.10.0",
+    "isort>=5.13.2",
     "jupyter>=1.1.1",
 ]
