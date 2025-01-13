@@ -40,11 +40,17 @@ disclaimer = st.Page(
     icon="⚠️",
     url_path="disclaimer"
 )
+data_protections = st.Page(
+    "st_data_protection.py",
+    title="Datenschutz",
+    icon="🔒",
+    url_path="data_protection"
+)
 pg = st.navigation(
     {
         "Chat": [st.Page("st_chat.py", title="ChatBTW", icon="🗳️", default=True)],
         "Wahlprogramme": [data["page"] for data in party_data.values()],
-        "Über": [about, disclaimer]
+        "Über": [about, disclaimer, data_protections]
     },
     expanded=False
 )
