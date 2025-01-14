@@ -130,6 +130,7 @@ def init_query_engines():
             similarity_top_k=10,
             verbose=True,
             query_gen_prompt=QUERY_GEN_PROMPT,
+            retriever_weights=[0.4, 0.6],
         )
 
         # configure response synthesizer
