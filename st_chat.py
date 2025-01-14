@@ -33,15 +33,13 @@ from supabase import Client, create_client
 from party_data import party_data
 
 POLICY = """
-Bitte akzeptiere die Nutzungsbedingungen um ChatBTW zu verwenden.  
-    
-⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Parteien. Troztdem kann ChatBTW Fehler machen. Für Details siehe [Disclaimer](/disclaimer).  
+Bevor es losgeht, bitte akzeptiere folgende Nutzungsbedingungen, um ChatBTW zu verwenden.  
 
-☑️ Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden.  
+🔒 Bitte beachte unsere [Datenschutzbestimmungen](/data_protection) bevor Du fortfährst. Falls Du im Nachhinein diesen Bestimmungen widersprechen möchtest, nimm bitte Kontakt zu uns auf und gebe folgende ID an: `{pseudo_user_id}`. Bitte speichere diese ID jetzt. Sie kann ebenfalls in den Datenschutzbestimmungen aufgerufen werden, solange Du ChatBTWs Cookies nicht löschst.
 
-🔬 Es werden keine personenbezogenen Daten gespeichert. Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW und für wissenschaftliche Zwecke ausgewertet und veröffentlicht werden.  
+⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Parteien. Trotzdem kann ChatBTW Fehler machen. Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden. Für Details siehe [Disclaimer](/disclaimer).  
 
-Mit der Nutzung von ChatBTW stimmst Du diesen Bedingungen zu.
+🔬 Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW verwendet werden. Mit Deiner Zustimmung können außerdem die eingegebenen Fragen wissenschaftlich ausgewertet und veröffentlicht werden. Falls es zu einer Veröffentlichung kommt, werden Deine Nachrichten auf mögliche personenbezogene Daten geprüft und anonymisiert oder von der Veröffentlichung ausgeschlossen. ChatBTW ist allerdings auch ohne diese Zustimmung nutzbar.  
 """
 
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
@@ -370,11 +368,17 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 
-@st.dialog("Nutzungsbedingungen")
+@st.dialog("🤝 Nutzungsbedingungen von ChatBTW", width="large")
 def accept_policy():
-    st.markdown(POLICY)
-    if st.button("Akzeptieren", type="primary"):
+    st.info("👋 Willkommen bei ChatBTW! ChatBTW ist eine KI mit der Du die Inhalte der Wahlprogramme der Parteien zur Bundestagswahl 2025 zu entdecken, vergleichen und verstehen kannst.")
+    st.markdown(POLICY.format(pseudo_user_id=cookie_controller.get("pseudo-user-id")))
+    # consent_cols = st.columns(3)
+    cookie_policy = st.checkbox("Ich stimme der Verwendung von Cookies zu.", key="cookie_policy", value=True)
+    data_protection_policy = st.checkbox("Ich akzeptiere die [Datenschutzbestimmungen](/data_protection).", key="data_protection_policy", value=True)
+    science_policy = st.checkbox("Ich stimme der **anonymen** Speicherung, Verarbeitung und Veröffentlichung meiner eingegebenen Nachrichten zu.", key="science_policy", value=True)
+    if st.button("Zustimmen", type="primary", disabled=not (cookie_policy and data_protection_policy)):
         cookie_controller.set("policy-accepted", True)
+        save_consents(cookie_policy, data_protection_policy, science_policy)
         st.rerun()
     else:
         st.stop()
