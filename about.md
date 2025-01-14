@@ -15,8 +15,9 @@ Als Suche nutzt ChatBTW dabei zum einen eine Schlagwortsuche (BM25 [[2](#refBM25
 Die Passagen aus dem Wahlprogramm, die durch die Suche gefunden wurden, werden dann genutzt, um eine Antwort zu generieren. Dabei wird ein Large Language Model (LLM) genutzt. In ChatBTW wird Google's Gemini Model (`models/gemini-1.5-flash-002`) [[5](#refGemini)] verwendet. Dabei handelt es sich vermutlich um ein relativ kleines Modell, das zwar nicht so leistungsstark wie größere Modelle ist, aber in gewissem Maße kostenlos genutzt werden kann. Außer der Generierung der Antwort wird das Modell instruiert, die Passagen aus dem Wahlprogramm zu zitieren. Diese werden dann als Links in der Antwort angezeigt, sodass der Nutzer die Quelle überprüfen kann.
 
 ### Einschränkungen
-- ChatBTW besitzt kein "Gedächtnis" und berücksichtigt keinen Kontext (also die vorherigen Nachrichten).
-- Erfahrungsgemäß funktionieren sehr allgemein gehaltene Fragen weniger gut.
+- ChatBTW besitzt kein "Gedächtnis" und berücksichtigt Kontext (also die vorherigen Nachrichten) zur Beantwortung der Fragen nicht. D.h. jede Frage wird unabhängig beantwortet und Folgefragen können nicht auf vorherige Antworten Bezug nehmen.
+- Erfahrungsgemäß funktionieren sehr allgemein gehaltene Fragen weniger gut, da die Suche nach relevanten Passagen schwieriger ist.
+- ChatBTW benutzt LLMs für die Suche und Generierung von Antworten. Diese Modelle sind nicht immer neutral und können bestimmte Bias enthalten [[6](refBias)].
 
 # Referenzen
 
@@ -29,3 +30,6 @@ Die Passagen aus dem Wahlprogramm, die durch die Suche gefunden wurden, werden d
 <a name="refRR"></a>[4] Cormack, Gordon V., Charles LA Clarke, and Stefan Buettcher. ["Reciprocal rank fusion outperforms condorcet and individual rank learning methods."](https://dl.acm.org/doi/pdf/10.1145/1571941.1572114) Proceedings of the 32nd international ACM SIGIR conference on Research and development in information retrieval. 2009.
 
 <a name="refGemini"></a>[5] Team, Gemini, et al. ["Gemini: a family of highly capable multimodal models."](https://arxiv.org/pdf/2312.11805) arXiv preprint arXiv:2312.11805 (2023).
+
+<a name="refBias"></a>[6] Yejin Bang, Delong Chen, Nayeon Lee, Pascale Fung. ["Measuring Political Bias in Large Language Models: What Is Said and How It Is Said"](https://aclanthology.org/2024.acl-long.600/) Annual Meeting of the Association for Computational Linguistics. 2024.
+
