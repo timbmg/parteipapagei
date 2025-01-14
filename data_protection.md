@@ -123,6 +123,17 @@ Wir verarbeiten die Daten der Nutzer, um ihnen unsere Online-Dienste zur Verfüg
 *   **Bereitstellung Onlineangebot auf gemietetem Speicherplatz:** Für die Bereitstellung unseres Onlineangebotes nutzen wir Speicherplatz, Rechenkapazität und Software, die wir von einem entsprechenden Serveranbieter (auch "Webhoster" genannt) mieten oder anderweitig beziehen; **Rechtsgrundlagen:** Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO).
 *   **Erhebung von Zugriffsdaten und Logfiles:** Der Zugriff auf unser Onlineangebot wird in Form von sogenannten "Server-Logfiles" protokolliert. Zu den Serverlogfiles können die Adresse und der Name der abgerufenen Webseiten und Dateien, Datum und Uhrzeit des Abrufs, übertragene Datenmengen, Meldung über erfolgreichen Abruf, Browsertyp nebst Version, das Betriebssystem des Nutzers, Referrer URL (die zuvor besuchte Seite) und im Regelfall IP-Adressen und der anfragende Provider gehören. Die Serverlogfiles können zum einen zu Sicherheitszwecken eingesetzt werden, z. B. um eine Überlastung der Server zu vermeiden (insbesondere im Fall von missbräuchlichen Angriffen, sogenannten DDoS-Attacken), und zum anderen, um die Auslastung der Server und ihre Stabilität sicherzustellen; **Rechtsgrundlagen:** Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO). **Löschung von Daten:** Logfile-Informationen werden für die Dauer von maximal 30 Tagen gespeichert und danach gelöscht oder anonymisiert. Daten, deren weitere Aufbewahrung zu Beweiszwecken erforderlich ist, sind bis zur endgültigen Klärung des jeweiligen Vorfalls von der Löschung ausgenommen.
 
+Für die Bereitstellung des Onlineangebot werden folgende Anbieter genutzt:
+
+### Streamlit.io
+**Hersteller und Dienstanbieter**: Streamlit.io
+**Datenschutzerklärung**: https://streamlit.io/privacy-policy
+**Nutzungsbedingungen**: https://streamlit.io/terms-of-use
+
+### Snowflake Inc.
+**Hersteller und Dienstanbieter**: [Snowflake Inc.](https://snowflake.com/)
+**Datenschutzerklärung**: https://www.snowflake.com/privacy-policy/
+
 ## Einsatz von Cookies
 
 Unter dem Begriff „Cookies" werden Funktionen, die Informationen auf Endgeräten der Nutzer speichern und aus ihnen auslesen, verstanden. Cookies können ferner in Bezug auf unterschiedliche Anliegen Einsatz finden, etwa zu Zwecken der Funktionsfähigkeit, der Sicherheit und des Komforts von Onlineangeboten sowie der Erstellung von Analysen der Besucherströme. Wir verwenden Cookies gemäß den gesetzlichen Vorschriften. Dazu holen wir, wenn erforderlich, vorab die Zustimmung der Nutzer ein. Ist eine Zustimmung nicht notwendig, setzen wir auf unsere berechtigten Interessen. Dies gilt, wenn das Speichern und Auslesen von Informationen unerlässlich ist, um ausdrücklich angeforderte Inhalte und Funktionen bereitstellen zu können. Dazu zählen etwa die Speicherung von Einstellungen sowie die Sicherstellung der Funktionalität und Sicherheit unseres Onlineangebots. Die Einwilligung kann jederzeit widerrufen werden. Wir informieren klar über deren Umfang und welche Cookies genutzt werden.
@@ -170,6 +181,15 @@ Die vorgenannten Angaben nutzen wir, um unsere Chat-Dienste zu betreiben, z. B.
 *   **Aufbewahrung und Löschung:** Löschung entsprechend Angaben im Abschnitt "Allgemeine Informationen zur Datenspeicherung und Löschung".
 *   **Rechtsgrundlagen:** Einwilligung (Art. 6 Abs. 1 S. 1 lit. a) DSGVO); Vertragserfüllung und vorvertragliche Anfragen (Art. 6 Abs. 1 S. 1 lit. b) DSGVO). Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO).
 
+Für die Nutzung des Chatdienst wird folgender Anbieter eingesetzt:
+
+### Google Gemini 
+**Hersteller und Dienstanbieter**: Google Cloud EMEA Limited, 70Sir John Rogerson’s Quay, Dublin 2, Irland  
+**Modelle**: Google Gemini  
+**Datenschutzerklärung**: https://policies.google.com/privacy  
+**Auftragsverarbeitungsvertrag**: https://business.safety.google/processorterms/?hl=de  **Nutzungsbedingungen**: https://policies.google.com/terms  
+
+
 ## Änderung und Aktualisierung
 
 Wir bitten Sie, sich regelmäßig über den Inhalt unserer Datenschutzerklärung zu informieren. Wir passen die Datenschutzerklärung an, sobald die Änderungen der von uns durchgeführten Datenverarbeitungen dies erforderlich machen. Wir informieren Sie, sobald durch die Änderungen eine Mitwirkungshandlung Ihrerseits (z. B. Einwilligung) oder eine sonstige individuelle Benachrichtigung erforderlich wird.
@@ -192,10 +212,4 @@ In diesem Abschnitt erhalten Sie eine Übersicht über die in dieser Datenschutz
 
 [Erstellt mit kostenlosem Datenschutz-Generator.de von Dr. Thomas Schwenke](https://datenschutz-generator.de/ "Rechtstext von Dr. Schwenke - für weitere Informationen bitte anklicken.")
 
-
-## Google Gemini 
-Hersteller und Dienstanbieter: Google Cloud EMEA Limited, 70Sir John Rogerson’s Quay, Dublin 2, Irland  
-Modelle: Google Gemini  
-Datenschutzerklärung: https://policies.google.com/privacy  
-Auftragsverarbeitungsvertrag: https://business.safety.google/processorterms/?hl=de  Nutzungsbedingungen: https://policies.google.com/terms  
 
