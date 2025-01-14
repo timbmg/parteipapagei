@@ -254,31 +254,35 @@ def response_generator(response, party: str):
             set(re.findall(r"\[\d+(?:,\s*\d+)*\]?|\[?\d+(?:,\s*\d+)*\]", stream))
         )
         for fragment in fragments:
-            modified_fragment = ""
-            last_char_was_digit = False
-            parsed_number = ""
-            for c in fragment:
-                if c.isdigit():
-                    parsed_number += c
-                    last_char_was_digit = True
-                else:
-                    if last_char_was_digit:
-                        _id = create_anchor_from_text(
-                            response.source_nodes[int(parsed_number) - 1].node.metadata[
-                                "header"
-                            ]
-                        )
-                        modified_fragment += f"[{parsed_number}]({party}#{_id})"
-                    modified_fragment += c
-                    last_char_was_digit = False
-                    parsed_number = ""
-            if last_char_was_digit:
-                _id = create_anchor_from_text(
-                    response.source_nodes[int(parsed_number) - 1].node.metadata[
-                        "header"
-                    ]
-                )
-                modified_fragment += f"[{parsed_number}]({party}#{_id})"
+            try:
+                modified_fragment = ""
+                last_char_was_digit = False
+                parsed_number = ""
+                for c in fragment:
+                    if c.isdigit():
+                        parsed_number += c
+                        last_char_was_digit = True
+                    else:
+                        if last_char_was_digit:
+                            _id = create_anchor_from_text(
+                                response.source_nodes[int(parsed_number) - 1].node.metadata[
+                                    "header"
+                                ]
+                            )
+                            modified_fragment += f"[{parsed_number}]({party}#{_id})"
+                        modified_fragment += c
+                        last_char_was_digit = False
+                        parsed_number = ""
+                if last_char_was_digit:
+                    _id = create_anchor_from_text(
+                        response.source_nodes[int(parsed_number) - 1].node.metadata[
+                            "header"
+                        ]
+                    )
+                    modified_fragment += f"[{parsed_number}]({party}#{_id})"
+            except Exception as e:
+                # if anything goes wrong, just keep the fragment as is
+                modified_fragment = fragment
             stream = stream.replace(fragment, modified_fragment)
 
         for word in stream.split():
