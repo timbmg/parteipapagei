@@ -286,6 +286,22 @@ def response_generator(response, party: str):
             time.sleep(0.025)
 
 
+def save_consents(cookies: bool, data_protection: bool, science: bool):
+    response = (
+        supabase.table("consents")
+        .insert(
+            {
+                "cookies": cookies,
+                "data_protection": data_protection,
+                "science": science,
+                "environment": ENVIRONMENT,
+                "user_id": USER_ID,
+                "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
+            }
+        )
+        .execute()
+    )
+
 def save_query(user_query: str, parties: list[str]) -> int:
     response = (
         supabase.table("queries")
@@ -295,6 +311,7 @@ def save_query(user_query: str, parties: list[str]) -> int:
                 "parties": parties,
                 "environment": ENVIRONMENT,
                 "user_id": USER_ID,
+                "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
             }
         )
         .execute()
