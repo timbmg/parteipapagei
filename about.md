@@ -1,5 +1,5 @@
 # Über ChatBTW
-ChatBTW wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](https://github.com/timbmg/chatbtw) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte übernommen. Die Informationen sind nicht verbindlich und dienen nur zur Bildung und Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer).
+ChatBTW wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](https://github.com/timbmg/chatbtw) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte übernommen. Die Informationen sind nicht verbindlich und dienen nur zur Bildung und Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer) und die [Datenschutzbestimmungen](/data_protection).
 
 Für Fragen und Anregungen können Sie mich unter [baumgaertner.t@gmail.com](mailto:baumgaertner.t@gmail.com) erreichen.
 
