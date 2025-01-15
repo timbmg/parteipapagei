@@ -303,36 +303,44 @@ def response_generator(response, party: str):
 
 
 def save_consents(cookies: bool, data_protection: bool, science: bool):
-    response = (
-        supabase.table("consents")
-        .insert(
-            {
-                "cookies": cookies,
-                "data_protection": data_protection,
-                "science": science,
-                "environment": ENVIRONMENT,
-                "user_id": USER_ID,
-                "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
-            }
+    try:
+        response = (
+            supabase.table("consents")
+            .insert(
+                {
+                    "cookies": cookies,
+                    "data_protection": data_protection,
+                    "science": science,
+                    "environment": ENVIRONMENT,
+                    "user_id": USER_ID,
+                    "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
+                }
+            )
+            .execute()
         )
-        .execute()
-    )
+    except Exception as e:
+        print(e)
+
 
 def save_query(user_query: str, parties: list[str]) -> int:
-    response = (
-        supabase.table("queries")
-        .insert(
-            {
-                "query": user_query,
-                "parties": parties,
-                "environment": ENVIRONMENT,
-                "user_id": USER_ID,
-                "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
-            }
+    try:
+        response = (
+            supabase.table("queries")
+            .insert(
+                {
+                    "query": user_query,
+                    "parties": parties,
+                    "environment": ENVIRONMENT,
+                    "user_id": USER_ID,
+                    "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
+                }
+            )
+            .execute()
         )
-        .execute()
-    )
-    return response.data[0]["id"]
+        return response.data[0]["id"]
+    except Exception as e:
+        print(e)
+
 
 
 def save_response(
