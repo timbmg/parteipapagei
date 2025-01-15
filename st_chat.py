@@ -62,8 +62,9 @@ QUERY_GEN_PROMPT = """Du bist ein hilfreicher Assistent, der basierend auf einer
 eines Bürgers zum Wahlprogrammen einer Partei ähnliche Fragen generiert. Überlege dir 
 unterschiedliche Formulierungen der selben Frage und weitere verwandte Fragen um relevante 
 Informationen aus dem Wahlprogramm zu finden, die für die beantwortung der 
-ursprünglichen Frage nützlich sind. Generiere insgesamt {num_queries} Fragen, jede in 
-einer eigenen Zeile.\n
+ursprünglichen Frage nützlich sind. Falls die Frage sehr allgemein ist, formuliere 
+Fragen die die wichtigsten Informationen aus dem Wahlprogramm aller Parteien abdecken.\n 
+Generiere insgesamt {num_queries} Fragen, jede in einer eigenen Zeile.\n
 Frage: {query}\n
 Generierte Fragen:\n
 """
@@ -176,6 +177,17 @@ def init_query_engines():
 
     return engines
 
+class ProfanityChekcer():
+    def __init__(self):
+        with open("profanity_words.txt") as f:
+            self.wordlist = f.read().lower().splitlines()
+    def __call__(self, text) -> bool:
+        text = text.lower()
+        text = re.sub(r"[^\w\s]", "", text) 
+        for word in text.split():
+            if word in self.wordlist:
+                return True
+        return False
 
 class PromptCallbackHandler(BaseCallbackHandler):
     def __init__(
@@ -379,6 +391,16 @@ def add_user_query_to_session():
         {"role": "user", "content": st.session_state.user_query}
     )
 
+@st.dialog("🤬 Profanity Alert", width="small")
+def profanity_dilaog():
+    st.warning(
+        "ChatBTW hat möglicherweise unangemessene Sprache in deiner Anfrage erkannt. " 
+        "Auch wenn Du mit einer KI schreibst, bleibe bitte respektvoll."
+    )
+    st.session_state.messages = st.session_state.messages[:-1]
+    if st.button("Nochmal netter formulieren"):
+        new_chat_click()
+        st.rerun()
 
 def pretty_print_messages():
     for message in st.session_state.get("messages", []):
@@ -399,6 +421,8 @@ supabase.auth.set_session(
 )
 
 engines = init_query_engines()
+
+pc = ProfanityChekcer()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -548,6 +572,11 @@ if user_query or st.session_state.get("sample_query", None):
         user_query = st.session_state.pop("sample_query")
     else:
         query_type = "user"
+
+        if pc(user_query):
+            profanity_dilaog()
+            st.stop()
+
         if cookie_controller.get("science-consent"):
             query_id = save_query(user_query, st.session_state.party_selection)
 
