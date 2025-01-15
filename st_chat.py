@@ -33,13 +33,24 @@ from supabase import Client, create_client
 from party_data import party_data
 
 POLICY = """
-Bevor es losgeht, bitte akzeptiere folgende Nutzungsbedingungen, um ChatBTW zu verwenden.  
+Bevor es losgeht, lese bitte die folgenden Nutzungsbedingungen.  
 
 🔒 Bitte beachte unsere [Datenschutzbestimmungen](/data-protection) bevor Du fortfährst.
 
-⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Parteien. Trotzdem kann ChatBTW Fehler machen. Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden. Für Details siehe [Disclaimer](/disclaimer).  
+⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Parteien. 
+Trotzdem kann ChatBTW Fehler machen und die tatsächliche Position einer Partei falsch 
+wiedergeben. Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und 
+sollten unabhängig überprüft werden. Für Details siehe [Disclaimer](/disclaimer).  
 
-🔬 Alle eingegebenen Fragen werden gespeichert und können zur Verbesserung von ChatBTW verwendet werden. Mit Deiner Zustimmung können außerdem die eingegebenen Fragen wissenschaftlich ausgewertet und veröffentlicht werden. Falls es zu einer Veröffentlichung kommt, werden Deine Nachrichten auf mögliche personenbezogene Daten geprüft und anonymisiert oder von der Veröffentlichung ausgeschlossen. ChatBTW ist allerdings auch ohne diese Zustimmung nutzbar.  
+🔬 Mit Deiner Zustimmung können die eingegebenen Fragen gespeichert werden um. Diese 
+werden von ChatBTW verwendet werden und können  wissenschaftlich ausgewertet und 
+veröffentlicht werden. Falls es zu einer Veröffentlichung kommt, werden Deine 
+Nachrichten auf mögliche personenbezogene Daten geprüft und anonymisiert oder von der 
+Veröffentlichung ausgeschlossen. ChatBTW ist allerdings auch ohne diese Zustimmung 
+nutzbar. Falls Du im Nachhinein diesen Bestimmungen widersprechen möchtest, nimm bitte 
+Kontakt zu uns auf und gebe folgende ID an: `{pseudo_user_id}`. Bitte speichere diese 
+ID jetzt. Sie kann ebenfalls in der [Freiwilligen Einwilligung](/informed-consent) 
+aufgerufen werden, solange Du ChatBTWs Cookies nicht löschst.  
 """
 
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
@@ -396,10 +407,11 @@ def accept_policy():
     st.markdown(POLICY.format(pseudo_user_id=cookie_controller.get("pseudo-user-id")))
     # consent_cols = st.columns(3)
     cookie_policy = st.checkbox("Ich stimme der Verwendung von Cookies zu.", key="cookie_policy", value=True)
-    data_protection_policy = st.checkbox("Ich akzeptiere die [Datenschutzbestimmungen](/data_protection).", key="data_protection_policy", value=True)
-    science_policy = st.checkbox("Ich stimme der **anonymen** Speicherung, Verarbeitung und Veröffentlichung meiner eingegebenen Nachrichten zu.", key="science_policy", value=True)
+    data_protection_policy = st.checkbox("Ich akzeptiere die [Datenschutzbestimmungen](/data-protection).", key="data_protection_policy", value=True)
+    science_policy = st.checkbox("Ich habe die [Freiwillige Einwilligung](/informed-consent) gelesen und stimme der **anonymen** Speicherung, Verarbeitung und Veröffentlichung meiner eingegebenen Nachrichten zu.", key="science_policy", value=True)
     if st.button("Zustimmen", type="primary", disabled=not (cookie_policy and data_protection_policy)):
         cookie_controller.set("policy-accepted", True)
+        cookie_controller.set("science-consent", science_policy)
         save_consents(cookie_policy, data_protection_policy, science_policy)
         st.rerun()
     else:
@@ -520,8 +532,9 @@ if user_query or st.session_state.get("sample_query", None):
         query_type = "sample"
         user_query = st.session_state.pop("sample_query")
     else:
-        print("Got user query")
         query_type = "user"
+        if cookie_controller.get("science-consent"):
+            query_id = save_query(user_query, st.session_state.party_selection)
 
     for party in st.session_state.party_selection:
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
@@ -529,11 +542,11 @@ if user_query or st.session_state.get("sample_query", None):
             response_stream = response_generator(response=engine_response, party=party)
             response = st.write_stream(response_stream)
             st.empty()
-        # if query_type == "user":
-        # prompt = engines[party].callback_manager.handlers[0].last_prompt
-        # response_id = save_response(
-        #     query_id=query_id, response=response, party=party, prompt=prompt
-        # )
+        if query_type == "user" and cookie_controller.get("science-consent"):
+            prompt = engines[party].callback_manager.handlers[0].last_prompt
+            response_id = save_response(
+                query_id=query_id, response=response, party=party, prompt=prompt
+            )
         st.session_state.messages.append(
             {
                 "role": "assistant",

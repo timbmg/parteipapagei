@@ -46,11 +46,17 @@ data_protection = st.Page(
     icon="🔒",
     url_path="data-protection"
 )
+informed_consent = st.Page(
+    "st_informed_consent.py",
+    title="Freiwillige Einwilligung",
+    icon="🔬",
+    url_path="informed-consent"
+)
 pg = st.navigation(
     {
         "Chat": [st.Page("st_chat.py", title="ChatBTW", icon="🗳️", default=True)],
         "Wahlprogramme": [data["page"] for data in party_data.values()],
-        "Über": [about, disclaimer, data_protections]
+        "Über": [about, disclaimer, data_protection, informed_consent]
     },
     expanded=False
 )
