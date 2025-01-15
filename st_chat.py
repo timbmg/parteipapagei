@@ -419,10 +419,7 @@ def accept_policy():
 
 
 if not cookie_controller.get("policy-accepted"):
-    print(f"Policy not accepted {cookie_controller.get('policy-accepted')}")
     accept_policy()
-else:
-    print(f"Policy already accepted {cookie_controller.get('policy-accepted')}")
 
 header = st.container(key="container-header")
 st.markdown(
@@ -528,7 +525,6 @@ user_query = st.chat_input(
 if user_query or st.session_state.get("sample_query", None):
     query_type = None
     if st.session_state.get("sample_query", None):
-        print("Got sample query")
         query_type = "sample"
         user_query = st.session_state.pop("sample_query")
     else:
