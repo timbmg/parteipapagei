@@ -163,9 +163,10 @@ def init_query_engines():
 
         def format_context_fn(**kwargs):
             # format context with reference numbers
-            context_list = kwargs["context_str"].split("\n\n")
-            fmtted_context = "\n\n".join(
-                [f"[{i}] {c}" for i, c in enumerate(context_list, start=1)]
+            context_list = re.split(r"^#\s", kwargs["context_str"], flags=re.MULTILINE)
+            context_list = [x for x in context_list if x]
+            fmtted_context = "".join(
+                [f"[{i}] # {c}" for i, c in enumerate(context_list, start=1)]
             )
             return fmtted_context
 
