@@ -1,5 +1,5 @@
 # Über ChatBTW
-ChatBTW wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](https://github.com/timbmg/chatbtw) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte übernommen. Die Informationen sind nicht verbindlich und dienen nur zur Bildung und Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer) und die [Datenschutzbestimmungen](/data_protection).
+ChatBTW wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](https://github.com/timbmg/chatbtw) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte übernommen. Die Informationen sind nicht verbindlich und dienen nur zur Bildung und Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer) und die [Datenschutzbestimmungen](/data-protection).
 
 Für Fragen und Anregungen können Sie mich unter [baumgaertner.t@gmail.com](mailto:baumgaertner.t@gmail.com) erreichen.
 
@@ -8,18 +8,18 @@ Für Feature Requests und Bug Reports können Sie gerne ein [Issue](https://gith
 ## Technologie
 ChatBTW basiert auf Retrieval Augmented Generation (RAG) [[1](#refRAG)]. Dabei wird eine Suche mit einem Large Lange Model (LLM) verknüpft. Im Fall von ChatBTW werden zunächst relevante Passagen aus dem Wahlprogramm gesucht, basierend auf der Eingabe des Nutzers. Abschließend werden die relevanten Passagen genutzt, um eine Antwort zu generieren.
 
-### Suche
+## Suche
 Als Suche nutzt ChatBTW dabei zum einen eine Schlagwortsuche (BM25 [[2](#refBM25)]), zum anderen eine semantische Suche basierend auf einem Dense Retriever. Die semantische Suche wird durch Googles Gemini Model (`models/text-embedding-004`) [[3](#refGecko)] realisiert. Außerdem werden ähnliche Suchanfragen generiert, um die Suche zu verfeinern (z.B. um Synonyme zu finden). Letztlich wird eine Kombination aller gefundenen Ergebnisse genutzt, um die relevanten Passagen zu finden [[4](#refRR)].
 
-### Generierung
+## Generierung
 Die Passagen aus dem Wahlprogramm, die durch die Suche gefunden wurden, werden dann genutzt, um eine Antwort zu generieren. Dabei wird ein Large Language Model (LLM) genutzt. In ChatBTW wird Google's Gemini Model (`models/gemini-1.5-flash-002`) [[5](#refGemini)] verwendet. Dabei handelt es sich vermutlich um ein relativ kleines Modell, das zwar nicht so leistungsstark wie größere Modelle ist, aber in gewissem Maße kostenlos genutzt werden kann. Außer der Generierung der Antwort wird das Modell instruiert, die Passagen aus dem Wahlprogramm zu zitieren. Diese werden dann als Links in der Antwort angezeigt, sodass der Nutzer die Quelle überprüfen kann.
 
-### Einschränkungen
+## Einschränkungen
 - ChatBTW besitzt kein "Gedächtnis" und berücksichtigt Kontext (also die vorherigen Nachrichten) zur Beantwortung der Fragen nicht. D.h. jede Frage wird unabhängig beantwortet und Folgefragen können nicht auf vorherige Antworten Bezug nehmen.
 - Erfahrungsgemäß funktionieren sehr allgemein gehaltene Fragen weniger gut, da die Suche nach relevanten Passagen schwieriger ist.
 - ChatBTW benutzt LLMs für die Suche und Generierung von Antworten. Diese Modelle sind nicht immer neutral und können bestimmte Bias enthalten [[6](refBias)].
 
-# Referenzen
+## Referenzen
 
 <a name="refRAG"></a>[1] Lewis, Patrick, et al. ["Retrieval-augmented generation for knowledge-intensive nlp tasks."](https://proceedings.neurips.cc/paper_files/paper/2020/file/6b493230205f780e1bc26945df7481e5-Paper.pdf) Advances in Neural Information Processing Systems 33 (2020): 9459-9474.
 

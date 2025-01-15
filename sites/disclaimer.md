@@ -15,3 +15,5 @@ Die verwendeten Wahlprogramme sind aktuelle Entwürfe oder von den Parteitagen d
 | SPD                   | Beschlussfassung vom 11. Januar 2025      |
 | Bündnis 90/Die Grünen | Entwurf vom 17. Dezember 2024             |
 | FDP                   | Entwurf vom Entwurf vom 18. Dezember 2024 |
+
+Wir planen außerdem die Integration der Wahlprogramme von Bündnis Sahra Wagenknecht und Die Linke sobald diese veröffentlicht werden.

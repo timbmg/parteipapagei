@@ -35,7 +35,7 @@ from party_data import party_data
 POLICY = """
 Bevor es losgeht, bitte akzeptiere folgende Nutzungsbedingungen, um ChatBTW zu verwenden.  
 
-🔒 Bitte beachte unsere [Datenschutzbestimmungen](/data_protection) bevor Du fortfährst. Falls Du im Nachhinein diesen Bestimmungen widersprechen möchtest, nimm bitte Kontakt zu uns auf und gebe folgende ID an: `{pseudo_user_id}`. Bitte speichere diese ID jetzt. Sie kann ebenfalls in den Datenschutzbestimmungen aufgerufen werden, solange Du ChatBTWs Cookies nicht löschst.
+🔒 Bitte beachte unsere [Datenschutzbestimmungen](/data-protection) bevor Du fortfährst.
 
 ⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Parteien. Trotzdem kann ChatBTW Fehler machen. Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und sollten unabhängig überprüft werden. Für Details siehe [Disclaimer](/disclaimer).  
 

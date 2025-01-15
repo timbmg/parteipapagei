@@ -29,22 +29,22 @@ for party, data in party_data.items():
     )
 
 about = st.Page(
-    partial(st.markdown, open("about.md").read(), unsafe_allow_html=True),
+    partial(st.markdown, open("sites/about.md").read(), unsafe_allow_html=True),
     title="Über ChatBTW",
     icon="🧑🏼‍💻",
     url_path="about"
 )
 disclaimer = st.Page(
-    partial(st.markdown, open("disclaimer.md").read(), unsafe_allow_html=True),
+    partial(st.markdown, open("sites/disclaimer.md").read(), unsafe_allow_html=True),
     title="Disclaimer",
     icon="⚠️",
     url_path="disclaimer"
 )
-data_protections = st.Page(
+data_protection = st.Page(
     "st_data_protection.py",
     title="Datenschutz",
     icon="🔒",
-    url_path="data_protection"
+    url_path="data-protection"
 )
 pg = st.navigation(
     {
