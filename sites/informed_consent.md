@@ -46,6 +46,10 @@ Ich habe die Erläuterungen zur Studie gelesen und bin damit einverstanden, an d
 
 Ich erkläre mich einverstanden, dass die im Rahmen der Studie erhobenen Daten zu wissenschaftlichen Zwecken ausgewertet und in anonymisierter Form gespeichert werden. Ich bin mir darüber bewusst, dass meine Teilnahme freiwillig erfolgt und ich den Versuch jeder-zeit und ohne die Angabe von Gründen abbrechen kann.
 
-Verantwortliche Person für die Datenverarbeitung dieser Studie:
-Tim Baumgärtner
+Verantwortliche Person für die Datenverarbeitung dieser Studie:  
+Tim Baumgärtner  
 Email: [baumgaertner.t@gmail.com](mailto:baumgaertner.t@gmail.com)
+
+Kontaktadresse des Hessischen Datenschutzbeauftragten:  
+Email: [poststelle@datenschutz.hessen.de](mailto:poststelle@datenschutz.hessen.de)
+
