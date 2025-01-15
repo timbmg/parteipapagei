@@ -125,14 +125,14 @@ Wir verarbeiten die Daten der Nutzer, um ihnen unsere Online-Dienste zur Verfüg
 
 Für die Bereitstellung des Onlineangebot werden folgende Anbieter genutzt:
 
-### Streamlit.io
-**Hersteller und Dienstanbieter**: Streamlit.io
-**Datenschutzerklärung**: https://streamlit.io/privacy-policy
-**Nutzungsbedingungen**: https://streamlit.io/terms-of-use
+### Streamlit.io  
+**Hersteller und Dienstanbieter**: [Streamlit.io](https://streamlit.io/)  
+**Datenschutzerklärung**: https://streamlit.io/privacy-policy  
+**Nutzungsbedingungen**: https://streamlit.io/terms-of-use  
 
-### Snowflake Inc.
-**Hersteller und Dienstanbieter**: [Snowflake Inc.](https://snowflake.com/)
-**Datenschutzerklärung**: https://www.snowflake.com/privacy-policy/
+### Snowflake Inc.  
+**Hersteller und Dienstanbieter**: [Snowflake Inc.](https://snowflake.com/)  
+**Datenschutzerklärung**: https://www.snowflake.com/privacy-policy/  
 
 ## Einsatz von Cookies
 
@@ -187,7 +187,8 @@ Für die Nutzung des Chatdienst wird folgender Anbieter eingesetzt:
 **Hersteller und Dienstanbieter**: Google Cloud EMEA Limited, 70Sir John Rogerson’s Quay, Dublin 2, Irland  
 **Modelle**: Google Gemini  
 **Datenschutzerklärung**: https://policies.google.com/privacy  
-**Auftragsverarbeitungsvertrag**: https://business.safety.google/processorterms/?hl=de  **Nutzungsbedingungen**: https://policies.google.com/terms  
+**Auftragsverarbeitungsvertrag**: https://business.safety.google/processorterms/?hl=de  
+**Nutzungsbedingungen**: https://policies.google.com/terms  
 
 
 ## Änderung und Aktualisierung
