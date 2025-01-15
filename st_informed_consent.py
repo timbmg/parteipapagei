@@ -20,11 +20,12 @@ if science_consent:
         """.format(pseudo_user_id=pseudo_user_id)
     )
 else:
-    st.markdown("""
-        ## Einwilligung
-        Wenn Sie im nachinhein Ihre Einwilligung erteilen möchten, können Sie dies tun, indem Sie auf den folgenden Button klicken.
-        """
-    )
-    if st.button("Einwilligung erteilen"):
-        cookie_controller.set("science-consent", True)
-        st.success("Vielen Dank für Ihre Einwilligung.")
+    pass
+    # st.markdown("""
+    #     ## Einwilligung
+    #     Wenn Sie im nachinhein Ihre Einwilligung erteilen möchten, können Sie dies tun, indem Sie auf den folgenden Button klicken.
+    #     """
+    # )
+    # if st.button("Einwilligung erteilen"):
+    #     cookie_controller.set("science-consent", True)
+    #     st.success("Vielen Dank für Ihre Einwilligung.")
