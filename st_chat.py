@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import re
 import time
 import uuid
@@ -84,6 +85,7 @@ Bürger Frage: {query_str}\n
 Deine Politker Antwort: 
 """
 
+# will be saved in the database to distinguish between test and production data
 ENVIRONMENT = "test"
 
 
@@ -277,9 +279,9 @@ def response_generator(response, party: str):
                     else:
                         if last_char_was_digit:
                             _id = create_anchor_from_text(
-                                response.source_nodes[int(parsed_number) - 1].node.metadata[
-                                    "header"
-                                ]
+                                response.source_nodes[
+                                    int(parsed_number) - 1
+                                ].node.metadata["header"]
                             )
                             modified_fragment += f"[{parsed_number}]({party}#{_id})"
                         modified_fragment += c
@@ -297,9 +299,7 @@ def response_generator(response, party: str):
                 modified_fragment = fragment
             stream = stream.replace(fragment, modified_fragment)
 
-        for word in stream.split():
-            yield word + " "
-            time.sleep(0.025)
+        yield stream
 
 
 def save_consents(cookies: bool, data_protection: bool, science: bool):
@@ -342,7 +342,6 @@ def save_query(user_query: str, parties: list[str]) -> int:
         print(e)
 
 
-
 def save_response(
     query_id: int,
     response: str,
@@ -376,7 +375,6 @@ def new_chat_click():
 
 
 def add_user_query_to_session():
-    print("Adding user query to session.")
     st.session_state.messages.append(
         {"role": "user", "content": st.session_state.user_query}
     )
@@ -386,9 +384,6 @@ def pretty_print_messages():
     for message in st.session_state.get("messages", []):
         print(message["role"], "::", message["content"][:20])
 
-
-print("RERUN.")
-pretty_print_messages()
 
 if cookie_controller.get("pseudo-user-id") is None:
     cookie_controller.set("pseudo-user-id", str(uuid.uuid4()))
@@ -411,13 +406,29 @@ if "messages" not in st.session_state:
 
 @st.dialog("🤝 Nutzungsbedingungen von ChatBTW", width="large")
 def accept_policy():
-    st.info("👋 Willkommen bei ChatBTW! ChatBTW ist eine KI mit der Du die Inhalte der Wahlprogramme der Parteien zur Bundestagswahl 2025 zu entdecken, vergleichen und verstehen kannst.")
+    st.info(
+        "👋 Willkommen bei ChatBTW! ChatBTW ist eine KI mit der Du die Inhalte der Wahlprogramme der Parteien zur Bundestagswahl 2025 zu entdecken, vergleichen und verstehen kannst."
+    )
     st.markdown(POLICY.format(pseudo_user_id=cookie_controller.get("pseudo-user-id")))
     # consent_cols = st.columns(3)
-    cookie_policy = st.checkbox("Ich stimme der Verwendung von Cookies zu.", key="cookie_policy", value=True)
-    data_protection_policy = st.checkbox("Ich akzeptiere die [Datenschutzbestimmungen](/data-protection).", key="data_protection_policy", value=True)
-    science_policy = st.checkbox("Ich habe die [Freiwillige Einwilligung](/informed-consent) gelesen und stimme der **anonymen** Speicherung, Verarbeitung und Veröffentlichung meiner eingegebenen Nachrichten zu.", key="science_policy", value=True)
-    if st.button("Zustimmen", type="primary", disabled=not (cookie_policy and data_protection_policy)):
+    cookie_policy = st.checkbox(
+        "Ich stimme der Verwendung von Cookies zu.", key="cookie_policy", value=True
+    )
+    data_protection_policy = st.checkbox(
+        "Ich akzeptiere die [Datenschutzbestimmungen](/data-protection).",
+        key="data_protection_policy",
+        value=True,
+    )
+    science_policy = st.checkbox(
+        "Ich habe die [Freiwillige Einwilligung](/informed-consent) gelesen und stimme der **anonymen** Speicherung, Verarbeitung und Veröffentlichung meiner eingegebenen Nachrichten zu.",
+        key="science_policy",
+        value=True,
+    )
+    if st.button(
+        "Zustimmen",
+        type="primary",
+        disabled=not (cookie_policy and data_protection_policy),
+    ):
         cookie_controller.set("policy-accepted", True)
         cookie_controller.set("science-consent", science_policy)
         save_consents(cookie_policy, data_protection_policy, science_policy)
@@ -479,8 +490,12 @@ control_cols[1].segmented_control(
     options=[party for party, data in party_data.items() if data["enabled"]],
     format_func=lambda p: f"{party_data[p]['emoji']} {party_data[p]['name']}",
     selection_mode="multi",
-    # default=["cdu", "spd"],
-    default=["spd"],
+    default=st.session_state.get(
+        "party_selection",
+        random.sample(
+            [party for party in party_data.keys() if party_data[party]["enabled"]], 2
+        ),
+    ),
     key="party_selection",
 )
 control_cols[2].button(
@@ -500,7 +515,7 @@ if len(st.session_state.messages) == 0:
     st.session_state.sample_query = None
     sample_questions = [
         "Was ist ihr Plan, um Deutschlands Wirtschaft wieder wachsen zu lassen?",
-        "Wie sieht ihre Zuwanderungspolitik aus?",
+        "Was muss sich Ihrer Meinung nach in der Zuwanderungs- und Asylpolitik ändern?",
         "Wie können Klimaschutz und Wirtschaftswachstum vereint werden?",
         "Wie kann die Digitalisierung in Deutschland vorangetrieben werden?",
     ]
@@ -514,10 +529,6 @@ if len(st.session_state.messages) == 0:
         )
 else:
     # Display chat messages from history on app rerun
-    print(
-        f"Adding chat messages from history. Num messages: {len(st.session_state.messages)}"
-    )
-    pretty_print_messages()
     for message in st.session_state.messages:
         if message["role"] == "assistant":
             chat_message_kwargs = {"avatar": party_data[message["party"]]["emoji"]}
