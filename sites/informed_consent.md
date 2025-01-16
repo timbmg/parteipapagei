@@ -4,16 +4,16 @@
 Wir möchten Sie bitten, die nachfolgenden Erläuterungen zum Inhalt der Studie zu lesen und untenste-hende Einverständniserklärung zu unterzeichnen, sofern Sie damit einverstanden sind.
 
 ### Gegenstand der Studie
-Mit ChatBTW wird ein KI-System vorgestellt, das Wahlprogramme von Parteien analysiert und in einem Chatbot-Format präsentiert. Die Nutzerinnen und Nutzer können mit dem Chatbot interagieren und sich über die Wahlprogramme informieren.
+Mit ParteiPapagei wird ein KI-System vorgestellt, das Wahlprogramme von Parteien analysiert und in einem Chatbot-Format präsentiert. Die Nutzerinnen und Nutzer können mit dem Chatbot interagieren und sich über die Wahlprogramme informieren.
 
 ### Ablauf der Studie
 Die Studie besteht aus zwei Teilen: Im ersten Teil werden Sie gebeten, den Chatbot zu verwenden und sich über die Wahlprogramme zu informieren. Im zweiten Teil werden Sie gebeten, einen Fragebogen auszufüllen, um Ihre Meinung zur Anwendung und den Wahlprogrammen zu erfassen
 
 ### Dauer und Aufwandsentschädigung
-Die Teilnahme an der Studie ist freiwillig und ChatBTW kann kostenlos und je nach Belieben genutzt werden. Es wird keine Aufwandsentschädigung gezahlt.
+Die Teilnahme an der Studie ist freiwillig und ParteiPapagei kann kostenlos und je nach Belieben genutzt werden. Es wird keine Aufwandsentschädigung gezahlt.
 
 ### Möglicher Nutzen der Studie
-Die Studie dient dazu, die Akzeptanz und Nützlichkeit von ChatBTW zu untersuchen und ggf. Verbesserungen vorzunehmen. Die Ergebnisse der Studie können dazu beitragen, die Anwendung zu optimieren und die Informationsvermittlung zu verbessern.
+Die Studie dient dazu, die Akzeptanz und Nützlichkeit von ParteiPapagei zu untersuchen und ggf. Verbesserungen vorzunehmen. Die Ergebnisse der Studie können dazu beitragen, die Anwendung zu optimieren und die Informationsvermittlung zu verbessern.
 Außerdem können die Ergebnisse der Studie dazu beitragen, die Interessen und Meinungen der Nutzerinnen und Nutzer besser zu verstehen und die Wahlprogramme von Parteien transparenter zu machen.
 
 ### Mit der Teilnahme verbundene Erfahrungen/Risiken

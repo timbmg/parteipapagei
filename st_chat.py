@@ -38,20 +38,20 @@ Bevor es losgeht, lese bitte die folgenden Nutzungsbedingungen.
 
 🔒 Bitte beachte unsere [Datenschutzbestimmungen](/data-protection) bevor Du fortfährst.
 
-⚠️ Die Antworten von ChatBTW basieren auf dem Wahlprogramm der Parteien. 
-Trotzdem kann ChatBTW Fehler machen und die tatsächliche Position einer Partei falsch 
-wiedergeben. Alle von ChatBTW bereitgestellten Informationen sind unverbindlich und 
+⚠️ Die Antworten von ParteiPapagei basieren auf dem Wahlprogramm der Parteien. 
+Trotzdem kann ParteiPapagei Fehler machen und die tatsächliche Position einer Partei falsch 
+wiedergeben. Alle von ParteiPapagei bereitgestellten Informationen sind unverbindlich und 
 sollten unabhängig überprüft werden. Für Details siehe [Disclaimer](/disclaimer).  
 
 🔬 Mit Deiner Zustimmung können die eingegebenen Fragen gespeichert werden um. Diese 
-werden von ChatBTW verwendet werden und können  wissenschaftlich ausgewertet und 
+werden von ParteiPapagei verwendet werden und können  wissenschaftlich ausgewertet und 
 veröffentlicht werden. Falls es zu einer Veröffentlichung kommt, werden Deine 
 Nachrichten auf mögliche personenbezogene Daten geprüft und anonymisiert oder von der 
-Veröffentlichung ausgeschlossen. ChatBTW ist allerdings auch ohne diese Zustimmung 
+Veröffentlichung ausgeschlossen. ParteiPapagei ist allerdings auch ohne diese Zustimmung 
 nutzbar. Falls Du im Nachhinein diesen Bestimmungen widersprechen möchtest, nimm bitte 
 Kontakt zu uns auf und gebe folgende ID an: `{pseudo_user_id}`. Bitte speichere diese 
 ID jetzt. Sie kann ebenfalls in der [Freiwilligen Einwilligung](/informed-consent) 
-aufgerufen werden, solange Du ChatBTWs Cookies nicht löschst.  
+aufgerufen werden, solange Du ParteiPapageis Cookies nicht löschst.  
 """
 
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
@@ -397,7 +397,7 @@ def add_user_query_to_session():
 @st.dialog("🤬 Profanity Alert", width="small")
 def profanity_dilaog():
     st.warning(
-        "ChatBTW hat möglicherweise unangemessene Sprache in deiner Anfrage erkannt. " 
+        "ParteiPapagei hat möglicherweise unangemessene Sprache in deiner Anfrage erkannt. " 
         "Auch wenn Du mit einer KI schreibst, bleibe bitte respektvoll."
     )
     st.session_state.messages = st.session_state.messages[:-1]
@@ -431,10 +431,10 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 
-@st.dialog("🤝 Nutzungsbedingungen von ChatBTW", width="large")
+@st.dialog("🤝 Nutzungsbedingungen von ParteiPapagei", width="large")
 def accept_policy():
     st.info(
-        "👋 Willkommen bei ChatBTW! ChatBTW ist eine KI mit der Du die Inhalte der Wahlprogramme der Parteien zur Bundestagswahl 2025 zu entdecken, vergleichen und verstehen kannst."
+        "👋 Willkommen bei ParteiPapagei! ParteiPapagei ist eine KI mit der Du die Inhalte der Wahlprogramme der Parteien zur Bundestagswahl 2025 zu entdecken, vergleichen und verstehen kannst."
     )
     st.markdown(POLICY.format(pseudo_user_id=cookie_controller.get("pseudo-user-id")))
     # consent_cols = st.columns(3)
@@ -503,7 +503,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 header.write("<div class='fixed-header'/>", unsafe_allow_html=True)
-header.title("🗳️ ChatBTW")
+header.title("🗳️ ParteiPapagei")
 control_cols = header.columns(3, gap="small", vertical_alignment="bottom", border=False)
 control_cols[0].button(
     "💬 Neuer Chat",
@@ -536,7 +536,7 @@ control_cols[2].button(
 
 if len(st.session_state.messages) == 0:
     st.info(
-        "_Stelle eine eigene Frage oder wähle aus den Beispielen. ChatBTW wird eine Antwort für die Parteien basierend auf deren Wahlprogrammen generieren._",
+        "_Stelle eine eigene Frage oder wähle aus den Beispielen. ParteiPapagei wird eine Antwort für die Parteien basierend auf deren Wahlprogrammen generieren._",
         icon=":material/info:",
     )
     st.session_state.sample_query = None
@@ -565,7 +565,7 @@ else:
             st.markdown(message["content"])
 
 user_query = st.chat_input(
-    f"Deine Frage an ChatBTW", on_submit=add_user_query_to_session, key="user_query"
+    f"Deine Frage an ParteiPapagei", on_submit=add_user_query_to_session, key="user_query"
 )
 
 if user_query or st.session_state.get("sample_query", None):

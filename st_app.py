@@ -47,7 +47,7 @@ def markdown_insert_images(markdown):
 
 
 st.set_page_config(
-    page_title="ChatBTW",
+    page_title="ParteiPapagei",
     page_icon="🗳️",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -78,7 +78,7 @@ about = st.Page(
         markdown_insert_images(open("sites/about.md").read()),
         unsafe_allow_html=True,
     ),
-    title="Über ChatBTW",
+    title="Über ParteiPapagei",
     icon="🧑🏼‍💻",
     url_path="about",
 )
@@ -99,7 +99,7 @@ informed_consent = st.Page(
 )
 pg = st.navigation(
     {
-        "Chat": [st.Page("st_chat.py", title="ChatBTW", icon="🗳️", default=True)],
+        "Chat": [st.Page("st_chat.py", title="ParteiPapagei", icon="🗳️", default=True)],
         "Wahlprogramme": [data["page"] for data in party_data.values()],
         "Über": [about, disclaimer, data_protection, informed_consent],
     },

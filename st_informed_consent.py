@@ -16,7 +16,7 @@ if science_consent:
         Sie haben das Recht, ihre Teilnahme an der Studie zu widerrufen. 
         Wenn Sie von Ihrem Widerspruchsrecht Gebrauch machen möchten, genügt eine E-Mail an 
         [baumgaertner.t@gmail.com](mailto:baumgaertner.t@gmail.com) mit dem Betreff 
-        "Widerspruch ChatBTW" unter Angabe folgender ID `{pseudo_user_id}`.
+        "Widerspruch ParteiPapagei" unter Angabe folgender ID `{pseudo_user_id}`.
         """.format(pseudo_user_id=pseudo_user_id)
     )
 else:

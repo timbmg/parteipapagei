@@ -1,17 +1,17 @@
-# 🧑🏼‍💻 Über ChatBTW
-_Demokratie ist der Wettbewerb politischer Ideen. Die Parteien stellen ihre Ideen in ihrem Programm vor und am Wahltag entscheiden die Wähler, welche Idee sie am überzeugendensten finden. Mit ChatBTW wollen wir diese Ideen dem Wähler leichter zugänglich machen._
+# 🧑🏼‍💻 Über ParteiPapagei
+_Demokratie ist der Wettbewerb politischer Ideen. Die Parteien stellen ihre Ideen in ihrem Programm vor und am Wahltag entscheiden die Wähler, welche Idee sie am überzeugendensten finden. Mit ParteiPapagei wollen wir diese Ideen dem Wähler leichter zugänglich machen._
 
 
-ChatBTW wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](https://github.com/timbmg/chatbtw) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte übernommen. Die Informationen sind nicht verbindlich und dienen nur zur Bildung und Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer) und die [Datenschutzbestimmungen](/data-protection).
+ParteiPapagei wurde von Tim Baumgärtner entwickelt und ist ein Open-Source-Projekt. Der Quellcode ist auf [GitHub](https://github.com/timbmg/ParteiPapagei) verfügbar. Es wird keine Garantie für die Richtigkeit der generierten Inhalte übernommen. Die Informationen sind nicht verbindlich und dienen nur zur Bildung und Unterhaltung. Die Verwendung der Informationen erfolgt auf eigene Gefahr. Siehe auch den [Disclaimer](/disclaimer) und die [Datenschutzbestimmungen](/data-protection).
 
 Für Fragen und Anregungen können Sie mich unter [baumgaertner.t@gmail.com](mailto:baumgaertner.t@gmail.com) erreichen.
 
-Für Feature Requests und Bug Reports können Sie gerne ein [Issue](https://github.com/timbmg/chatbtw/issues) auf GitHub erstellen.
+Für Feature Requests und Bug Reports können Sie gerne ein [Issue](https://github.com/timbmg/ParteiPapagei/issues) auf GitHub erstellen.
 
-🕊️ Falls Du die laufen Kosten für ChatBTW unterstützen möchtest, kannst Du das gerne über [Ko-fi](https://ko-fi.com/timbmg) tun.
+🕊️ Falls Du die laufen Kosten für ParteiPapagei unterstützen möchtest, kannst Du das gerne über [Ko-fi](https://ko-fi.com/timbmg) tun.
 
 ## Technologie
-ChatBTW basiert auf Retrieval Augmented Generation (RAG) [[1](#refRAG)]. Dabei wird eine Suche mit einem Large Lange Model (LLM) verknüpft. Im Fall von ChatBTW werden zunächst relevante Passagen aus dem Wahlprogramm gesucht, basierend auf der Eingabe des Nutzers. Abschließend werden die relevanten Passagen genutzt, um eine Antwort zu generieren.
+ParteiPapagei basiert auf Retrieval Augmented Generation (RAG) [[1](#refRAG)]. Dabei wird eine Suche mit einem Large Lange Model (LLM) verknüpft. Im Fall von ParteiPapagei werden zunächst relevante Passagen aus dem Wahlprogramm gesucht, basierend auf der Eingabe des Nutzers. Abschließend werden die relevanten Passagen genutzt, um eine Antwort zu generieren.
 
 ![RAG](./rag.png)
 
@@ -25,17 +25,17 @@ Die Passagen des Preprocessings werden anschließend einer Schlagwort- und Seman
 Basierend auf der Frage des Nutzers werden zunächst ähnliche Fragen generiert. Dies dient dazu, mehr relevante Schlagwörter oder andere Informationen aus dem Wahlprogramm zu finden, die so nicht direkt in der Frage enthalten sind. Anschließend werden die Fragen derselben Textanalyse unterzogen wie die Passagen.
 
 ### Suche
-Als Suche nutzt ChatBTW dabei zum einen eine Schlagwortsuche (BM25 [[2](#refBM25)]), zum anderen eine semantische Suche basierend auf einem Dense Retriever. Die semantische Suche wird durch Googles Gemini Model (`models/text-embedding-004`) [[3](#refGecko)] realisiert. 
+Als Suche nutzt ParteiPapagei dabei zum einen eine Schlagwortsuche (BM25 [[2](#refBM25)]), zum anderen eine semantische Suche basierend auf einem Dense Retriever. Die semantische Suche wird durch Googles Gemini Model (`models/text-embedding-004`) [[3](#refGecko)] realisiert. 
 Nachdem sowohl die Wahlprogramme, als auch die Suchanfrage in eine semantische Repräsentation umgewandelt wurden, wird die Ähnlichkeit zwischen den beiden Repräsentationen berechnet. Am Ende werden die Passagen aus den Wahlprogrammen zurückgegeben, die die höchste Ähnlichkeit zur Suchanfrage aufweisen. Die Ergebnisse der beiden Repräsentationen werden dabei fusioniert [[4](#refRR)].
 
 
 ### Antwortgenerierung
-Die Passagen aus dem Wahlprogramm, die durch die Suche gefunden wurden, werden dann genutzt, um eine Antwort zu generieren. Dabei wird ein Large Language Model (LLM) genutzt. In ChatBTW wird Google's Gemini Model (`models/gemini-1.5-flash-002`) [[5](#refGemini)] verwendet. Dabei handelt es sich um ein relativ kleines Modell, das zwar nicht so leistungsstark wie größere Modelle ist, aber relativ günstig genutzt werden kann. Außer der Generierung der Antwort wird das Modell instruiert, die Passagen aus dem Wahlprogramm zu zitieren. Diese werden dann als Links in der Antwort angezeigt, sodass der Nutzer die Quelle überprüfen kann.
+Die Passagen aus dem Wahlprogramm, die durch die Suche gefunden wurden, werden dann genutzt, um eine Antwort zu generieren. Dabei wird ein Large Language Model (LLM) genutzt. In ParteiPapagei wird Google's Gemini Model (`models/gemini-1.5-flash-002`) [[5](#refGemini)] verwendet. Dabei handelt es sich um ein relativ kleines Modell, das zwar nicht so leistungsstark wie größere Modelle ist, aber relativ günstig genutzt werden kann. Außer der Generierung der Antwort wird das Modell instruiert, die Passagen aus dem Wahlprogramm zu zitieren. Diese werden dann als Links in der Antwort angezeigt, sodass der Nutzer die Quelle überprüfen kann.
 
 ### Einschränkungen
-- ChatBTW besitzt kein "Gedächtnis" und berücksichtigt Kontext (also die vorherigen Nachrichten) zur Beantwortung der Fragen nicht. D.h. jede Frage wird unabhängig beantwortet und Folgefragen können nicht auf vorherige Antworten Bezug nehmen.
+- ParteiPapagei besitzt kein "Gedächtnis" und berücksichtigt Kontext (also die vorherigen Nachrichten) zur Beantwortung der Fragen nicht. D.h. jede Frage wird unabhängig beantwortet und Folgefragen können nicht auf vorherige Antworten Bezug nehmen.
 - Erfahrungsgemäß funktionieren sehr allgemein gehaltene Fragen weniger gut, da die Suche nach relevanten Passagen schwieriger ist.
-- ChatBTW benutzt LLMs für die Suche und Generierung von Antworten. Diese Modelle sind nicht immer neutral und können bestimmte Bias enthalten [[6](refBias)].
+- ParteiPapagei benutzt LLMs für die Suche und Generierung von Antworten. Diese Modelle sind nicht immer neutral und können bestimmte Bias enthalten [[6](refBias)].
 
 ## Referenzen
 
