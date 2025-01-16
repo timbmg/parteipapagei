@@ -47,7 +47,7 @@ def markdown_insert_images(markdown):
 
 
 st.set_page_config(
-    page_title="🗳️ ChatBTW",
+    page_title="ChatBTW",
     page_icon="🗳️",
     layout="wide",
     initial_sidebar_state="collapsed",
