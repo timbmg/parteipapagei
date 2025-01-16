@@ -471,7 +471,10 @@ header = st.container(key="container-header")
 st.markdown(
     """<style>
     footer {
-        visibility: hidden;
+        visibility: hidden !important;
+    }
+    #MainMenu {
+        visibility: hidden !important;
     }
     .block-container {
         padding-top: 1.5rem;
