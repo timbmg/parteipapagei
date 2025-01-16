@@ -89,7 +89,7 @@ Deine Politker Antwort:
 """
 
 # will be saved in the database to distinguish between test and production data
-ENVIRONMENT = "test"
+ENVIRONMENT = st.secrets["ENVIRONMENT"]
 
 
 cookie_controller = CookieController()
