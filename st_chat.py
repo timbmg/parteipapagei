@@ -503,7 +503,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 header.write("<div class='fixed-header'/>", unsafe_allow_html=True)
-header.title("🗳️ ParteiPapagei")
+header.title("🗳️ ParteiPapagei", anchor=False)
 control_cols = header.columns(3, gap="small", vertical_alignment="bottom", border=False)
 control_cols[0].button(
     "💬 Neuer Chat",
