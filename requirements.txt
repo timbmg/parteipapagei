@@ -1,0 +1,11 @@
+chromadb>=0.5.23
+llama-index-embeddings-gemini>=0.3.0
+llama-index-llms-gemini>=0.4.2
+llama-index-retrievers-bm25
+llama-index-vector-stores-chroma>=0.4.1
+llama-index>=0.12.5
+st-supabase-connection>=2.0.1
+streamlit-cookies-controller>=0.0.4
+streamlit>=1.41.1
+supabase>=2.11.0
+xxhash>=3.5.0
