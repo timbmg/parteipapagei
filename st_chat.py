@@ -470,6 +470,9 @@ if not cookie_controller.get("policy-accepted"):
 header = st.container(key="container-header")
 st.markdown(
     """<style>
+    footer {
+        visibility: hidden;
+    }
     .block-container {
         padding-top: 1.5rem;
     }
