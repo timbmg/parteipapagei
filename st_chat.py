@@ -34,7 +34,7 @@ from supabase import Client, create_client
 from party_data import party_data
 
 POLICY = """
-Bevor es losgeht, lese bitte die folgenden Nutzungsbedingungen.  
+Bevor es losgeht, lies bitte die folgenden Nutzungsbedingungen.  
 
 🔒 Bitte beachte unsere [Datenschutzbestimmungen](/data-protection) bevor Du fortfährst.
 
