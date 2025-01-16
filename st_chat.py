@@ -447,7 +447,7 @@ def accept_policy():
         value=True,
     )
     science_policy = st.checkbox(
-        "Ich habe die [Freiwillige Einwilligung](/informed-consent) gelesen und stimme der **anonymen** Speicherung, Verarbeitung und Veröffentlichung meiner eingegebenen Nachrichten zu.",
+        "Ich habe die [Freiwillige Einwilligung](/informed-consent) gelesen und stimme der Speicherung, Verarbeitung und **anonymen** Veröffentlichung meiner Nachrichten zu.",
         key="science_policy",
         value=True,
     )
