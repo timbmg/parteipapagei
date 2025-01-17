@@ -44,14 +44,15 @@ wiedergeben. Alle von ParteiPapagei bereitgestellten Informationen sind unverbin
 sollten unabhängig überprüft werden. Für Details siehe [Disclaimer](/disclaimer).  
 
 🔬 Mit Deiner Zustimmung können die eingegebenen Fragen gespeichert werden um. Diese 
-werden von ParteiPapagei verwendet werden und können  wissenschaftlich ausgewertet und 
-veröffentlicht werden. Falls es zu einer Veröffentlichung kommt, werden Deine 
-Nachrichten auf mögliche personenbezogene Daten geprüft und anonymisiert oder von der 
-Veröffentlichung ausgeschlossen. ParteiPapagei ist allerdings auch ohne diese Zustimmung 
-nutzbar. Falls Du im Nachhinein diesen Bestimmungen widersprechen möchtest, nimm bitte 
-Kontakt zu uns auf und gebe folgende ID an: `{pseudo_user_id}`. Bitte speichere diese 
-ID jetzt. Sie kann ebenfalls in der [Freiwilligen Einwilligung](/informed-consent) 
-aufgerufen werden, solange Du ParteiPapageis Cookies nicht löschst.  
+werden zur Verbesserung von ParteiPapagei verwendet und können wissenschaftlich 
+ausgewertet und veröffentlicht werden. Falls es zu einer Veröffentlichung kommt, werden 
+Deine Nachrichten auf mögliche personenbezogene Daten geprüft und anonymisiert oder von 
+der Veröffentlichung ausgeschlossen. ParteiPapagei ist allerdings auch ohne diese 
+Zustimmung nutzbar. Falls Du im Nachhinein diesen Bestimmungen widersprechen möchtest, 
+nimm bitte Kontakt zu uns auf und gebe folgende ID an: `{pseudo_user_id}`. Bitte 
+speichere diese ID jetzt. Sie kann ebenfalls in der 
+[Freiwilligen Einwilligung](/informed-consent) aufgerufen werden, solange Du 
+ParteiPapageis Cookies nicht löschst.
 """
 
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
@@ -434,7 +435,7 @@ if "messages" not in st.session_state:
 @st.dialog("🤝 Nutzungsbedingungen von ParteiPapagei", width="large")
 def accept_policy():
     st.info(
-        "👋 Willkommen bei ParteiPapagei! ParteiPapagei ist eine KI mit der Du die Inhalte der Wahlprogramme der Parteien zur Bundestagswahl 2025 zu entdecken, vergleichen und verstehen kannst."
+        "👋 Willkommen bei ParteiPapagei! ParteiPapagei ist eine KI mit der Du die Inhalte der Wahlprogramme der Parteien zur Bundestagswahl 2025 entdecken, vergleichen und verstehen kannst."
     )
     st.markdown(POLICY.format(pseudo_user_id=cookie_controller.get("pseudo-user-id")))
     # consent_cols = st.columns(3)
