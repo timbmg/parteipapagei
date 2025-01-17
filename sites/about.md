@@ -8,7 +8,7 @@ Für Fragen und Anregungen können Sie mich unter [baumgaertner.t@gmail.com](mai
 
 Für Feature Requests und Bug Reports können Sie gerne ein [Issue](https://github.com/timbmg/ParteiPapagei/issues) auf GitHub erstellen.
 
-🕊️ Falls Du die laufen Kosten für ParteiPapagei unterstützen möchtest, kannst Du das gerne über [Ko-fi](https://ko-fi.com/timbmg) tun.
+🤲 Falls Du ParteiPapagei hilfreich findest und einen Teil zu den laufenden Kosten beitragen kannst, unterstüze mich gerne auf [Ko-fi](https://ko-fi.com/timbmg).
 
 ## Technologie
 ParteiPapagei basiert auf Retrieval Augmented Generation (RAG) [[1](#refRAG)]. Dabei wird eine Suche mit einem Large Lange Model (LLM) verknüpft. Im Fall von ParteiPapagei werden zunächst relevante Passagen aus dem Wahlprogramm gesucht, basierend auf der Eingabe des Nutzers. Abschließend werden die relevanten Passagen genutzt, um eine Antwort zu generieren.
