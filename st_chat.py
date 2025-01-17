@@ -104,7 +104,20 @@ time.sleep(0.2)
 def init_supabase_connection() -> Client:
     url = st.secrets["SUPABASE_URL"]
     key = st.secrets["SUPABASE_KEY"]
-    return create_client(url, key)
+    client = create_client(url, key)
+
+    user_data = client.auth.sign_in_with_password(
+        {
+            "email": st.secrets["SUPABASE_EMAIL"],
+            "password": st.secrets["SUPABASE_PASSWORD"],
+        }
+    )
+    return (
+        client,
+        user_data.user.id,
+        user_data.session.access_token,
+        user_data.session.refresh_token,
+    )
 
 
 @st.cache_resource(show_spinner="Lese Wahlprogramme...")
@@ -334,7 +347,7 @@ def save_consents(cookies: bool, data_protection: bool, science: bool):
                     "data_protection": data_protection,
                     "science": science,
                     "environment": ENVIRONMENT,
-                    "user_id": USER_ID,
+                    "user_id": sb_user_id,
                     "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
                 }
             )
@@ -356,7 +369,7 @@ def save_query(user_query: str, parties: list[str]) -> int:
                     "query": user_query,
                     "parties": parties,
                     "environment": ENVIRONMENT,
-                    "user_id": USER_ID,
+                    "user_id": sb_user_id,
                     "pseudo_user_id": cookie_controller.get("pseudo-user-id"),
                 }
             )
@@ -384,7 +397,7 @@ def save_response(
                     "prompt": prompt,
                     "environment": ENVIRONMENT,
                     "query_id": query_id,
-                    "user_id": USER_ID,
+                    "user_id": sb_user_id,
                 }
             )
             .execute()
@@ -431,15 +444,8 @@ def pretty_print_messages():
 if cookie_controller.get("pseudo-user-id") is None:
     cookie_controller.set("pseudo-user-id", str(uuid.uuid4()))
 
-supabase = init_supabase_connection()
-user_data = supabase.auth.sign_in_with_password(
-    {"email": st.secrets["SUPABASE_EMAIL"], "password": st.secrets["SUPABASE_PASSWORD"]}
-)
-USER_ID = user_data.user.id
-session = user_data.session
-supabase.auth.set_session(
-    access_token=session.access_token, refresh_token=session.refresh_token
-)
+supabase, sb_user_id, sb_access_token, sb_refresh_token = init_supabase_connection()
+supabase.auth.set_session(access_token=sb_access_token, refresh_token=sb_refresh_token)
 
 engines = init_query_engines()
 
