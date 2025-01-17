@@ -607,13 +607,13 @@ if user_query or st.session_state.get("sample_query", None):
         user_query = st.session_state.pop("sample_query")
     else:
         query_type = "user"
-
         if pc(user_query):
             profanity_dilaog()
             st.stop()
 
         if cookie_controller.get("science-consent"):
             query_id = save_query(user_query, st.session_state.party_selection)
+    logger.info(f"Query: {user_query}")
 
     for party in st.session_state.party_selection:
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
@@ -621,6 +621,7 @@ if user_query or st.session_state.get("sample_query", None):
             response_stream = response_generator(response=engine_response, party=party)
             response = st.write_stream(response_stream)
             st.empty()
+            logger.info(f"Response by {party}: {response}")
         if query_type == "user" and cookie_controller.get("science-consent"):
             prompt = engines[party].callback_manager.handlers[0].last_prompt
             _ = save_response(
