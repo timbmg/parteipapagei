@@ -33,6 +33,8 @@ from supabase import Client, create_client
 
 from party_data import party_data
 
+logger = logging.getLogger(__name__)
+
 POLICY = """
 Bevor es losgeht, lies bitte die folgenden Nutzungsbedingungen.  
 
@@ -181,17 +183,20 @@ def init_query_engines():
 
     return engines
 
-class ProfanityChekcer():
+
+class ProfanityChekcer:
     def __init__(self):
         with open("profanity_words.txt") as f:
             self.wordlist = f.read().lower().splitlines()
+
     def __call__(self, text) -> bool:
         text = text.lower()
-        text = re.sub(r"[^\w\s]", "", text) 
+        text = re.sub(r"[^\w\s]", "", text)
         for word in text.split():
             if word in self.wordlist:
                 return True
         return False
+
 
 class PromptCallbackHandler(BaseCallbackHandler):
     def __init__(
@@ -312,6 +317,7 @@ def response_generator(response, party: str):
                     modified_fragment += f"[{parsed_number}]({party}#{_id})"
             except Exception as e:
                 # if anything goes wrong, just keep the fragment as is
+                logger.error(f"Error processing fragment\n{fragment=}\n{stream=}")
                 modified_fragment = fragment
             stream = stream.replace(fragment, modified_fragment)
 
@@ -335,6 +341,9 @@ def save_consents(cookies: bool, data_protection: bool, science: bool):
             .execute()
         )
     except Exception as e:
+        logger.error(
+            f"Error saving consents; {cookies=}, {data_protection=}, {science=}"
+        )
         print(e)
 
 
@@ -355,6 +364,7 @@ def save_query(user_query: str, parties: list[str]) -> int:
         )
         return response.data[0]["id"]
     except Exception as e:
+        logger.error(f"Error saving query; {user_query=}, {parties=}")
         print(e)
 
 
@@ -364,20 +374,25 @@ def save_response(
     party: str,
     prompt: str,
 ):
-    response = (
-        supabase.table("responses")
-        .insert(
-            {
-                "response": response,
-                "party": party,
-                "prompt": prompt,
-                "environment": ENVIRONMENT,
-                "query_id": query_id,
-                "user_id": USER_ID,
-            }
+    try:
+        response = (
+            supabase.table("responses")
+            .insert(
+                {
+                    "response": response,
+                    "party": party,
+                    "prompt": prompt,
+                    "environment": ENVIRONMENT,
+                    "query_id": query_id,
+                    "user_id": USER_ID,
+                }
+            )
+            .execute()
         )
-        .execute()
-    )
+    except Exception as e:
+        logger.error(f"Error saving response; {response=}, {party=}, {prompt=}")
+        print(e)
+        return None
     return response.data[0]["id"]
 
 
@@ -395,16 +410,18 @@ def add_user_query_to_session():
         {"role": "user", "content": st.session_state.user_query}
     )
 
+
 @st.dialog("🤬 Profanity Alert", width="small")
 def profanity_dilaog():
     st.warning(
-        "ParteiPapagei hat möglicherweise unangemessene Sprache in deiner Anfrage erkannt. " 
+        "ParteiPapagei hat möglicherweise unangemessene Sprache in deiner Anfrage erkannt. "
         "Auch wenn Du mit einer KI schreibst, bleibe bitte respektvoll."
     )
     st.session_state.messages = st.session_state.messages[:-1]
     if st.button("Nochmal netter formulieren"):
         new_chat_click()
         st.rerun()
+
 
 def pretty_print_messages():
     for message in st.session_state.get("messages", []):
@@ -572,7 +589,9 @@ else:
             st.markdown(message["content"])
 
 user_query = st.chat_input(
-    f"Deine Frage an ParteiPapagei", on_submit=add_user_query_to_session, key="user_query"
+    f"Deine Frage an ParteiPapagei",
+    on_submit=add_user_query_to_session,
+    key="user_query",
 )
 
 if user_query or st.session_state.get("sample_query", None):
@@ -598,7 +617,7 @@ if user_query or st.session_state.get("sample_query", None):
             st.empty()
         if query_type == "user" and cookie_controller.get("science-consent"):
             prompt = engines[party].callback_manager.handlers[0].last_prompt
-            response_id = save_response(
+            _ = save_response(
                 query_id=query_id, response=response, party=party, prompt=prompt
             )
         st.session_state.messages.append(
