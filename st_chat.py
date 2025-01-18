@@ -133,11 +133,11 @@ def init_query_engines():
 
         dense_retriever = VectorIndexRetriever(
             index=index,
-            similarity_top_k=100,
+            similarity_top_k=50,
             filters=filters,
         )
         bm25_retriever = BM25Retriever.from_persist_dir(f"bm25/{party}")
-        bm25_retriever.similarity_top_k = 100
+        bm25_retriever.similarity_top_k = 50
 
         fusion_retriever = CachedQueryFusionRetriever(
             [

@@ -34,12 +34,13 @@ party_data = {
         "enabled": True,
         "url_to_program": "https://www.fdp.de/sites/default/files/2024-12/fdp-wahlprogramm_2025.pdf",
     },
-    # "bsw": {
-    #     "emoji": "🟪",
-    #     "name": "BSW",
-    #     "template_name": "BSW",
-    #     "enabled": False,
-    # },
+    "bsw": {
+        "emoji": "🟪",
+        "name": "BSW",
+        "template_name": "BSW",
+        "enabled": True,
+        "url_to_program": "https://bsw-vg.de/wp-content/themes/bsw/assets/downloads/BSW%20Wahlprogramm%202025.pdf",
+    },
     # "linke": {
     #     "emoji": "🟪",
     #     "name": "Linke",
