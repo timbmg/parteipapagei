@@ -35,7 +35,7 @@ party_data = {
         "url_to_program": "https://www.fdp.de/sites/default/files/2024-12/fdp-wahlprogramm_2025.pdf",
     },
     "bsw": {
-        "emoji": "🟪",
+        "emoji": "🟧",
         "name": "BSW",
         "template_name": "BSW",
         "enabled": True,
