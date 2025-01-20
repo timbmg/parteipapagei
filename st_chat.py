@@ -434,17 +434,21 @@ if cookie_controller.get("pseudo-user-id") is None:
 
 # supabase, sb_user_id, sb_access_token, sb_refresh_token = init_supabase_connection()
 supabase = init_supabase_connection()
-user_data = supabase.auth.sign_in_with_password(
-    {
-        "email": st.secrets["SUPABASE_EMAIL"],
-        "password": st.secrets["SUPABASE_PASSWORD"],
-    }
-)
-sb_user_id = user_data.user.id
-supabase.auth.set_session(
-    access_token=user_data.session.access_token,
-    refresh_token=user_data.session.refresh_token,
-)
+session = supabase.auth.get_session()
+if session is None:
+    user_data = supabase.auth.sign_in_with_password(
+        {
+            "email": st.secrets["SUPABASE_EMAIL"],
+            "password": st.secrets["SUPABASE_PASSWORD"],
+        }
+    )
+    sb_user_id = user_data.user.id
+    supabase.auth.set_session(
+        access_token=user_data.session.access_token,
+        refresh_token=user_data.session.refresh_token,
+    )
+else:
+    sb_user_id = session.user.id
 
 engines = init_query_engines()
 
