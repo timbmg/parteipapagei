@@ -5,3 +5,15 @@ The app is hosted on Streamlit and can be accessed [https://parteipapagei.stream
 
 https://github.com/user-attachments/assets/cf8a81cf-c474-4151-bfe9-734447b4b8a2
 
+## Citation
+```bibtex
+@software{Baumgartner_ParteiPapagei_2025,
+    author = {Baumgärtner, Tim},
+    license = {Apache-2.0},
+    month = jan,
+    title = {{ParteiPapagei}},
+    url = {https://github.com/timbmg/parteipapagei},
+    version = {v0.1},
+    year = {2025}
+}
+```
