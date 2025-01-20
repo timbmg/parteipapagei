@@ -17,4 +17,4 @@ Die verwendeten Wahlprogramme sind aktuelle Entwürfe oder von den Parteitagen d
 | FDP                   | Entwurf vom 18. Dezember 2024        |
 | BSW                   | Finale Version vom 12. Januar 2025   |
 
-Wir planen außerdem die Integration des Wahlprogramms von Die Linke sobald die finale version veröffentlicht.
+Wir planen außerdem die Integration des Wahlprogramms von Die Linke sobald die finale Version veröffentlicht ist.
