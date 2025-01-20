@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: ParteiPapagei
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Tim
+    family-names: Baumgärtner
+    email: baumgaertner.t@gmail.com
+    orcid: 'https://orcid.org/0000-0001-6903-5509'
+repository-code: 'https://github.com/timbmg/parteipapagei'
+url: 'https://parteipapagei.streamlit.app'
+abstract: >-
+  ParteiPapagei is a simple RAG (Retrieval-Augmented
+  Generation) application designed to facilitate
+  conversations with the political programs of Germany's
+  major parties in preparation for the 2025 election
+  ("Bundestagswahl"). The app enables users to ask questions
+  about proposed party policies and generates responses
+  grounded in the respective party programs. Additionally,
+  it includes links within the responses, directing users to
+  the relevant sections of the programs for verification and
+  in-depth exploration. As a supplementary resource, we
+  provide the processed and cleaned party programs in
+  Markdown format for easy access and use.
+keywords:
+  - RAG
+  - Bundestagswahl
+  - LLM
+  - Generative AI
+license: Apache-2.0
