@@ -574,7 +574,7 @@ if len(st.session_state.messages) == 0:
     )
     st.session_state.sample_query = None
     sample_questions = [
-        "Was ist ihr Plan, um Deutschlands Wirtschaft wieder wachsen zu lassen?",
+        "Was ist Ihr Plan, um Deutschlands Wirtschaft wieder wachsen zu lassen?",
         "Was muss sich Ihrer Meinung nach in der Zuwanderungs- und Asylpolitik ändern?",
         "Wie können Klimaschutz und Wirtschaftswachstum vereint werden?",
         "Wie kann die Digitalisierung in Deutschland vorangetrieben werden?",
