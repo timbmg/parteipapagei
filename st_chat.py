@@ -134,9 +134,10 @@ def init_query_engines():
 
         dense_retriever = VectorIndexRetriever(
             index=index,
-            similarity_top_k=50,
+            similarity_top_k=20,
             filters=filters,
         )
+        bm25_retriever.similarity_top_k = 20
         bm25_retriever.stemmer = Stemmer.Stemmer("german")
 
         fusion_retriever = CachedQueryFusionRetriever(
@@ -145,12 +146,12 @@ def init_query_engines():
                 bm25_retriever,
             ],
             mode="reciprocal_rerank",
-            num_queries=4,
+            num_queries=3,
             use_async=False,
             similarity_top_k=10,
             verbose=True,
             query_gen_prompt=QUERY_GEN_PROMPT,
-            retriever_weights=[0.4, 0.6],
+            retriever_weights=[0.5, 0.5],
         )
 
         # configure response synthesizer
