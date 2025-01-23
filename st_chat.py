@@ -9,6 +9,7 @@ from typing import Any, Optional, cast
 
 import chromadb
 import llama_index.core.instrumentation as instrument
+import Stemmer
 import streamlit as st
 import xxhash
 from llama_index.core import (PromptTemplate, QueryBundle, Settings,
@@ -136,8 +137,7 @@ def init_query_engines():
             similarity_top_k=50,
             filters=filters,
         )
-        bm25_retriever = BM25Retriever.from_persist_dir(f"bm25/{party}")
-        bm25_retriever.similarity_top_k = 50
+        bm25_retriever.stemmer = Stemmer.Stemmer("german")
 
         fusion_retriever = CachedQueryFusionRetriever(
             [
