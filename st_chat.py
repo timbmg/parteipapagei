@@ -520,7 +520,6 @@ st.markdown(
     }
     div[data-testid="stColumn"] * {
         margin-top: 0 !important;
-        width: fit-content !important;
     }
     div.st-key-btn-party-selection-help button {
         border: none !important;
@@ -534,12 +533,35 @@ st.markdown(
         line-height: 1.6;
         min-height: 2.5rem;
     }
+    div.st-key-simple-language {
+        line-height: 1.6;
+        min-height: 2.5rem;
+        display: flex;
+    }
+    div.st-key-simple-language label {
+        margin-bottom: 0 !important;
+        display: flex;
+        place-items: center start !important;
+    }
+    div.st-key-short-answer {
+        line-height: 1.6;
+        min-height: 2.5rem;
+        display: flex;
+    }
+    div.st-key-short-answer label {
+        margin-bottom: 0 !important;
+        display: flex;
+        place-items: center start !important;
+    }
+    div.stCheckbox {
+        margin-bottom: 0 !important;
+    }
 </style>""",
     unsafe_allow_html=True,
 )
 header.write("<div class='fixed-header'/>", unsafe_allow_html=True)
 header.title("🗳️ ParteiPapagei", anchor=False)
-control_cols = header.columns(3, gap="small", vertical_alignment="bottom", border=False)
+control_cols = header.columns(5, gap="small", vertical_alignment="bottom", border=False)
 control_cols[0].button(
     "💬 Neuer Chat",
     on_click=new_chat_click,
@@ -559,6 +581,8 @@ control_cols[1].segmented_control(
         ),
     ),
     key="party_selection",
+    help="Wähle die Parteien mit denen Du dich über ihr Programm unterhalten willst.",
+    label_visibility="hidden",
 )
 control_cols[2].button(
     label="",
@@ -568,7 +592,18 @@ control_cols[2].button(
     type="secondary",
     disabled=True,
 )
-
+control_cols[3].toggle(
+    "Einfache Sprache",
+    key="simple-language",
+    value=False,
+    help="Aktiviere diese Option, um die Antworten in einfacher Sprache zu erhalten.",
+)
+control_cols[4].toggle(
+    "Kurze Antwort",
+    key="short-answer",
+    value=False,
+    help="Aktiviere diese Option, um kurze Antworten zu erhalten.",
+)
 if len(st.session_state.messages) == 0:
     st.info(
         "_Stelle eine eigene Frage oder wähle aus den Beispielen. ParteiPapagei wird eine Antwort für die Parteien basierend auf deren Wahlprogrammen generieren._",
