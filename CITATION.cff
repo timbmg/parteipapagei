@@ -33,6 +33,6 @@ keywords:
   - LLM
   - Generative AI
 license: Apache-2.0
-commit: 075bc1e44d553e47004da06f63095739afd37c19
-version: v0.1
+commit: 942b8c1c6b9f3eff565eaff4a2035775dde6febc
+version: v0.2
 date-released: '2025-01-17'
