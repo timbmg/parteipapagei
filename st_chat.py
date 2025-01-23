@@ -79,17 +79,29 @@ Relevante Passagen aus dem Wahlprogramm sind unten aufgeführt.\n
 {context_str}\n
 ---------------------\n
 Beantworte die Frage basierend auf den Informationen im Wahlprogramm. 
-Überlege wie die Informationen im Wahlprogramm auf die Frage des Bürgers anwendbar sind.\n
+Überlege, wie die Informationen im Wahlprogramm auf die Frage des Bürgers anwendbar sind.\n
 Falls die Inhalte des Wahlprogramms nicht relevant sind, 
-antworte dem Bürger das die {party} keine Position zu diesem Thema im Wahlprogramm hat.\n
-Füge jeder deiner Aussagen eine Referenz hinzu, auf welche Passage aus dem Wahlprogramm diese zurück zu führen ist. 
-Verwende dazu die folgendes Format: <Antwort> [X, Y]' 
-um zu belegen, dass deine Antwort sich auf Passagen X und Y zurück zu führen ist.\n
-Falls die Frage unangemessen ist, also z.B. beleidigend oder diskriminierend, weise den 
-Bürger darauf hin und bitte ihn um eine angemessene Frage.\n
-Halten deine Antwort kurz und prägnant, um den Bürger zu überzeugen.\n
-Bürger Frage: {query_str}\n
-Deine Politker Antwort: 
+antworte dem Bürger, dass die {party} keine Position zu diesem Thema im Wahlprogramm hat.\n
+Falls die Frage unangemessen, beleidigend oder diskriminierend ist, weise den Bürger 
+darauf hin und bitte ihn um eine angemessene Frage.\n
+Halten deine Antwort kurz und prägnant, um den Bürger von den Inhalten der {party} zu überzeugen.\n
+{settings_str}
+Füge jeder deiner Aussagen eine Referenz hinzu, auf welche Passage aus dem Wahlprogramm diese zurückzuführen ist. 
+Verwende dazu folgendes Format: '<Antwort> [X, Y].' um zu belegen, dass deine 
+Antwort, sich auf Passagen X und Y zurückzuführen ist.\n
+Formatiere deine Antwort in Markdown, z.B. nutze Bulletpoints mit fettgedruckten Stichpunkten um einen neuen Punkt zu beginnen.\n
+Bürgerfrage: {query_str}\n
+Deine Politiker-Antwort 
+"""
+SIMPLE_LANGUAGE_PROMPT = """
+Benutze eine klare, einfache und verständliche Sprache mit kurzen Sätzen und ohne 
+Fachbegriffe. Vermeide oder erkläre Begriffe, die einem einfachen Bürger unbekannt sein 
+könnten.
+"""
+SHORT_ANSWER_PROMPT = """
+Konzentriere dich ausschließlich auf die wichtigsten Punkte. Deine Antwort darf nicht 
+länger als 1-2 Sätze sein stellt nur den wichtigsten Punkt der Partei klar und prägnant 
+dar. 
 """
 
 # will be saved in the database to distinguish between test and production data
@@ -99,6 +111,19 @@ ENVIRONMENT = st.secrets["ENVIRONMENT"]
 cookie_controller = CookieController()
 # we need to wait for the cookie to be set, otherwise the cookie dialog will be shown again
 time.sleep(0.2)
+
+
+class RetrieverQueryEngineWithPromptSelection(RetrieverQueryEngine):
+
+    def __init__(self, prompts: dict, *args, **kwargs):
+        self.prompts = prompts
+        super().__init__(*args, **kwargs)
+
+    def query(self, query, prompt):
+        selected_prompt = self.prompts[prompt]
+        self.update_prompts({"response_synthesizer:text_qa_template": selected_prompt})
+
+        return super().query(query)
 
 
 @st.cache_resource
@@ -160,13 +185,6 @@ def init_query_engines():
             streaming=True, callback_manager=callback_manager
         )
 
-        # assemble query engine
-        query_engine = RetrieverQueryEngine(
-            retriever=fusion_retriever,
-            response_synthesizer=response_synthesizer,
-            node_postprocessors=[RankCutoffPostprocessor(rank_cutoff=10)],
-        )
-
         def format_context_fn(**kwargs):
             # format context with reference numbers
             context_list = re.split(r"^#\s", kwargs["context_str"], flags=re.MULTILINE)
@@ -176,12 +194,43 @@ def init_query_engines():
             )
             return fmtted_context
 
-        text_qa_template = PromptTemplate(
+        base_template = PromptTemplate(
             QA_PROMPT, function_mappings={"context_str": format_context_fn}
-        ).partial_format(party=party_data[party]["template_name"])
-        query_engine.update_prompts(
-            {"response_synthesizer:text_qa_template": text_qa_template}
+        ).partial_format(party=party_data[party]["template_name"], settings_str="")
+
+        short_template = PromptTemplate(
+            QA_PROMPT, function_mappings={"context_str": format_context_fn}
+        ).partial_format(
+            party=party_data[party]["template_name"],
+            settings_str=SHORT_ANSWER_PROMPT + "\n",
         )
+
+        simple_template = PromptTemplate(
+            QA_PROMPT, function_mappings={"context_str": format_context_fn}
+        ).partial_format(
+            party=party_data[party]["template_name"],
+            settings_str=SIMPLE_LANGUAGE_PROMPT + "\n",
+        )
+
+        short_simple_template = PromptTemplate(
+            QA_PROMPT, function_mappings={"context_str": format_context_fn}
+        ).partial_format(
+            party=party_data[party]["template_name"],
+            settings_str=SIMPLE_LANGUAGE_PROMPT + "\n" + SHORT_ANSWER_PROMPT + "\n",
+        )
+
+        query_engine = RetrieverQueryEngineWithPromptSelection(
+            prompts={
+                "base": base_template,
+                "short": short_template,
+                "simple": simple_template,
+                "short_simple": short_simple_template,
+            },
+            retriever=fusion_retriever,
+            response_synthesizer=response_synthesizer,
+            node_postprocessors=[RankCutoffPostprocessor(rank_cutoff=10)],
+        )
+
         engines[party] = query_engine
 
     return engines
@@ -640,6 +689,18 @@ user_query = st.chat_input(
     key="user_query",
 )
 
+simple_language = st.session_state.get("simple-language", False)
+short_answer = st.session_state.get("short-answer", False)
+
+if simple_language and short_answer:
+    prompt_selection = "short_simple"
+elif simple_language:
+    prompt_selection = "simple"
+elif short_answer:
+    prompt_selection = "short"
+else:
+    prompt_selection = "base"
+
 if user_query or st.session_state.get("sample_query", None):
     query_type = None
     if st.session_state.get("sample_query", None):
@@ -657,7 +718,7 @@ if user_query or st.session_state.get("sample_query", None):
 
     for party in st.session_state.party_selection:
         with st.chat_message("assistant", avatar=party_data[party]["emoji"]):
-            engine_response = engines[party].query(user_query)
+            engine_response = engines[party].query(user_query, prompt=prompt_selection)
             response_stream = response_generator(response=engine_response, party=party)
             response = st.write_stream(response_stream)
             st.empty()
