@@ -7,3 +7,6 @@ hideTopBar = true
 [client]
 toolbarMode = "minimal"
 showErrorDetails = "none"
+
+[logger]
+level = "info"
