@@ -112,7 +112,7 @@ def init_supabase_connection() -> Client:
 @st.cache_resource(show_spinner="Lese Wahlprogramme...")
 def init_query_engines():
 
-    CHROMA_PERSIST_DIR = "chroma"
+    CHROMA_PERSIST_DIR = "chroma-256"
     CHROMA_COLLECTION = "wahlprogramme"
 
     Settings.llm = Gemini(model=GEMINI_LLM_MODEL)
@@ -137,6 +137,7 @@ def init_query_engines():
             similarity_top_k=20,
             filters=filters,
         )
+        bm25_retriever = BM25Retriever.from_persist_dir(f"bm25-256/{party}")
         bm25_retriever.similarity_top_k = 20
         bm25_retriever.stemmer = Stemmer.Stemmer("german")
 
