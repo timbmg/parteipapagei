@@ -545,21 +545,28 @@ def accept_policy():
 if not cookie_controller.get("policy-accepted"):
     accept_policy()
 
+st.title("🗳️ ParteiPapagei", anchor=False)
 header = st.container(key="container-header")
 st.markdown(
     """<style>
+    h1 {
+        padding-top:1rem !important
+    }
     footer {
         visibility: hidden !important;
     }
     #MainMenu {
         visibility: hidden !important;
     }
+    header {
+        visibility: hidden !important;
+    }
     .block-container {
-        padding-top: 1.5rem;
+        padding-top: 0rem;
     }
     div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
         position: sticky;
-        top: 2.875rem;
+        top: 0.001rem;
         background-color: white;
         z-index: 999;
     }
@@ -605,11 +612,25 @@ st.markdown(
     div.stCheckbox {
         margin-bottom: 0 !important;
     }
+    div.stMarkdown:has(#party-selection-help) {
+        line-height: 1.6;
+        min-height: 2.5rem;
+        display: flex;
+    }
+    div.stMarkdown label {
+        margin-bottom: 0 !important;
+        display: flex;
+        place-items: center start !important;
+    }
+    @media (max-width: 768px) { /* Adjust 768px to your desired breakpoint */
+        div.stColumn:has(#party-selection-help):not(:has(div.stColumn)) {
+            display: none;
+        }
+    }
 </style>""",
     unsafe_allow_html=True,
 )
 header.write("<div class='fixed-header'/>", unsafe_allow_html=True)
-header.title("🗳️ ParteiPapagei", anchor=False)
 control_cols = header.columns(5, gap="small", vertical_alignment="bottom", border=False)
 control_cols[0].button(
     "💬 Neuer Chat",
@@ -617,7 +638,6 @@ control_cols[0].button(
     disabled=len(st.session_state.get("messages", [])) == 0,
     type="secondary",
 )
-
 control_cols[1].segmented_control(
     label=None,
     options=[party for party, data in party_data.items() if data["enabled"]],
@@ -633,13 +653,10 @@ control_cols[1].segmented_control(
     help="Wähle die Parteien mit denen Du dich über ihr Programm unterhalten willst.",
     label_visibility="hidden",
 )
-control_cols[2].button(
-    label="",
-    key="btn-party-selection-help",
-    icon=":material/help:",
+control_cols[2].markdown(
+    "<div id='party-selection-help'/>",
     help="Wähle die Parteien mit denen Du dich über ihr Programm unterhalten willst.",
-    type="secondary",
-    disabled=True,
+    unsafe_allow_html=True,
 )
 control_cols[3].toggle(
     "Einfache Sprache",
