@@ -623,8 +623,12 @@ st.markdown(
         place-items: center start !important;
     }
     @media (max-width: 768px) { /* Adjust 768px to your desired breakpoint */
+        div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
+            position: static; /* Disable sticky behavior */
+        }
+        
         div.stColumn:has(#party-selection-help):not(:has(div.stColumn)) {
-            display: none;
+            display: none; /* Hide the column with the party selection help */
         }
     }
 </style>""",
