@@ -3,7 +3,8 @@ ParteiPapagei is a simple RAG (Retrieval-Augmented Generation) application desig
 
 The app is hosted on Streamlit and can be accessed at [https://parteipapagei.streamlit.app/](https://parteipapagei.streamlit.app/).
 
-https://github.com/user-attachments/assets/cf8a81cf-c474-4151-bfe9-734447b4b8a2
+![parteipapagei](https://github.com/user-attachments/assets/d25c1b0d-b382-4891-9e34-cb98e4a3a50b)
+
 
 ## Citation
 ```bibtex
