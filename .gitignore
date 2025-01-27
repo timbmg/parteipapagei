@@ -13,3 +13,11 @@ wheels/
 .env
 .DS_Store
 .streamlit/secrets.toml
+
+chroma-1024
+chroma-128
+bm25-1024
+bm25-128
+data/clean/*.txt
+data/raw
+supabase-dump
