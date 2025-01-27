@@ -14,7 +14,7 @@ The app is hosted on Streamlit and can be accessed at [https://parteipapagei.str
     month = jan,
     title = {{ParteiPapagei}},
     url = {https://github.com/timbmg/parteipapagei},
-    version = {v0.2},
+    version = {v0.3},
     year = {2025}
 }
 ```
