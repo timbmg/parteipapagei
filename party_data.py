@@ -41,10 +41,11 @@ party_data = {
         "enabled": True,
         "url_to_program": "https://bsw-vg.de/wp-content/themes/bsw/assets/downloads/BSW%20Wahlprogramm%202025.pdf",
     },
-    # "linke": {
-    #     "emoji": "🟪",
-    #     "name": "Linke",
-    #     "template_name": "Linke",
-    #     "enabled": False,
-    # },
+    "linke": {
+        "emoji": "🟪",
+        "name": "Die Linke",
+        "template_name": "Die Linke",
+        "enabled": True,
+        "url_to_program": "https://www.die-linke.de/bundestagswahl-2025/wahlprogramm/",
+    },
 }
