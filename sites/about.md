@@ -34,6 +34,7 @@ Die Passagen aus dem Wahlprogramm, die durch die Suche gefunden wurden, werden d
 
 ### Einschränkungen
 - ParteiPapagei besitzt kein "Gedächtnis" und berücksichtigt Kontext (also die vorherigen Nachrichten) zur Beantwortung der Fragen nicht. D.h. jede Frage wird unabhängig beantwortet und Folgefragen können nicht auf vorherige Antworten Bezug nehmen.
+- ParteiPapagei kann nur auf die Informationen in den Wahlprogrammen zugreifen. Es kann keine aktuellen Informationen oder Meinungen zu politischen Themen geben.
 - Erfahrungsgemäß funktionieren sehr allgemein gehaltene Fragen weniger gut, da die Suche nach relevanten Passagen schwieriger ist.
 - ParteiPapagei benutzt LLMs für die Suche und Generierung von Antworten. Diese Modelle sind nicht immer neutral und können bestimmte Bias enthalten [[6](refBias)].
 
