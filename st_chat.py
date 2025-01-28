@@ -135,8 +135,8 @@ class RetrieverQueryEngineWithPromptSelection(RetrieverQueryEngine):
 
 @st.cache_resource
 def init_supabase_connection() -> Client:
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
+    url = get_secret_or_env_var("SUPABASE_URL")
+    key = get_secret_or_env_var("SUPABASE_KEY")
     client = create_client(url, key)
     return client
 
