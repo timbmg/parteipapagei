@@ -104,7 +104,9 @@ dar.
 """
 
 def get_secret_or_env_var(key: str, default: Optional[str] = None) -> str:
-    return st.secrets.get(key) or os.getenv(key, default)
+    if not os.path.exists("./streamlit/secrets.toml"):
+        return os.getenv(key, default)
+    return st.secrets.get(key, default) or os.getenv(key, default)
 
 # will be saved in the database to distinguish between test and production data
 ENVIRONMENT = get_secret_or_env_var("ENVIRONMENT")
