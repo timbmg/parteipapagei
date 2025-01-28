@@ -58,7 +58,6 @@ speichere diese ID jetzt. Sie kann ebenfalls in der
 ParteiPapageis Cookies nicht löschst.
 """
 
-os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 GEMINI_LLM_MODEL = "models/gemini-1.5-flash-002"
 GEMINI_EMBEDDING_MODEL = "models/text-embedding-004"
 
@@ -104,8 +103,14 @@ länger als 1-2 Sätze sein stellt nur den wichtigsten Punkt der Partei klar und
 dar. 
 """
 
+def get_secret_or_env_var(key: str, default: Optional[str] = None) -> str:
+    return st.secrets.get(key) or os.getenv(key, default)
+
 # will be saved in the database to distinguish between test and production data
-ENVIRONMENT = st.secrets["ENVIRONMENT"]
+ENVIRONMENT = get_secret_or_env_var("ENVIRONMENT")
+
+# make sure GOOGLE_API_KEY is set in env variable
+os.environ["GOOGLE_API_KEY"] = get_secret_or_env_var("GOOGLE_API_KEY")
 
 
 cookie_controller = CookieController()
@@ -489,8 +494,8 @@ session = supabase.auth.get_session()
 if session is None:
     user_data = supabase.auth.sign_in_with_password(
         {
-            "email": st.secrets["SUPABASE_EMAIL"],
-            "password": st.secrets["SUPABASE_PASSWORD"],
+            "email": get_secret_or_env_var("SUPABASE_EMAIL"),
+            "password": get_secret_or_env_var("SUPABASE_PASSWORD"),
         }
     )
     sb_user_id = user_data.user.id
