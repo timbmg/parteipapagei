@@ -37,10 +37,40 @@ from party_data import party_data
 
 logger = logging.getLogger(__name__)
 
-components.html("""
-    <script defer src="https://extreme-margette-timbmg-8db0980e.koyeb.app/script.js" data-website-id="2fbccb2f-448e-43a4-bca0-2811a3635aa6" data-host-url="test.parteipapagei.de"></script>
-    """
-)
+script_url = "https://extreme-margette-timbmg-8db0980e.koyeb.app/script.js"
+website_id = "2fbccb2f-448e-43a4-bca0-2811a3635aa6"
+
+html_contents = f"""
+<script id="extractorScript">
+    (function() {{
+        let currentScript = document.getElementById('extractorScript');
+
+        // Ensure this script runs only once
+        if (window.parent.injectedTrackingScript) return;
+        window.parent.injectedTrackingScript = true;
+
+        // Create script element
+        let script = window.parent.document.createElement("script");
+        script.src = "{script_url}";
+        script.defer = true;
+        script.setAttribute("data-website-id", "{website_id}");
+        script.setAttribute("data-host-url", window.parent.location.origin);
+
+        // Append script to parent document
+        window.parent.document.body.appendChild(script);
+
+        // Optionally remove the iframe itself (use carefully)
+        let iframes = window.parent.document.querySelectorAll("iframe");
+        for (let iframe of iframes) {{
+            if (iframe.contentWindow === window) {{
+                iframe.remove();
+            }}
+        }}
+    }})();
+</script>
+"""
+
+components.html(html_contents)
 
 POLICY = """
 Bevor es losgeht, lies bitte die folgenden Nutzungsbedingungen.  
