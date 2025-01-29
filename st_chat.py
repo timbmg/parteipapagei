@@ -766,7 +766,7 @@ if user_query or st.session_state.get("sample_query", None):
         )
 
 components.html("""
-    <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-    <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
+    <script data-collect-dnt="true" data-hostname="test.parteipapagei.de" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+    <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true&?hostname=test.parteipapagei.de" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
     """
 )
