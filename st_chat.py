@@ -37,8 +37,13 @@ from party_data import party_data
 
 logger = logging.getLogger(__name__)
 
-script_url = "https://extreme-margette-timbmg-8db0980e.koyeb.app/script.js"
-website_id = "2fbccb2f-448e-43a4-bca0-2811a3635aa6"
+def get_secret_or_env_var(key: str, default: Optional[str] = None) -> str:
+    if not os.path.exists("./streamlit/secrets.toml"):
+        return os.getenv(key, default)
+    return st.secrets.get(key, default) or os.getenv(key, default)
+
+script_url = get_secret_or_env_var("ANALYTICS_SCRIPT_URL")
+website_id = get_secret_or_env_var("ANALYTICS_WEBSITE_ID")
 
 html_contents = f"""
 <script id="extractorScript">
@@ -68,7 +73,6 @@ html_contents = f"""
     }})();
 </script>
 """
-
 components.html(html_contents)
 
 POLICY = """
@@ -137,11 +141,6 @@ Konzentriere dich ausschließlich auf die wichtigsten Punkte. Deine Antwort darf
 länger als 1-2 Sätze sein stellt nur den wichtigsten Punkt der Partei klar und prägnant 
 dar. 
 """
-
-def get_secret_or_env_var(key: str, default: Optional[str] = None) -> str:
-    if not os.path.exists("./streamlit/secrets.toml"):
-        return os.getenv(key, default)
-    return st.secrets.get(key, default) or os.getenv(key, default)
 
 # will be saved in the database to distinguish between test and production data
 ENVIRONMENT = get_secret_or_env_var("ENVIRONMENT")
