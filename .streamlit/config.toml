@@ -10,3 +10,6 @@ showErrorDetails = "none"
 
 [logger]
 level = "info"
+
+[browser]
+gatherUsageStats = true
