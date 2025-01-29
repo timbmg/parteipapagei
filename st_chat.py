@@ -54,7 +54,6 @@ html_contents = f"""
         script.src = "{script_url}";
         script.defer = true;
         script.setAttribute("data-website-id", "{website_id}");
-        script.setAttribute("data-host-url", window.parent.location.origin);
 
         // Append script to parent document
         window.parent.document.body.appendChild(script);
