@@ -38,7 +38,8 @@ from party_data import party_data
 logger = logging.getLogger(__name__)
 
 components.html("""
-<script defer src="https://cloud.umami.is/script.js" data-website-id="a42e4197-604e-45d1-b826-200e42ff46fc"></script>"""
+    <script defer src="https://extreme-margette-timbmg-8db0980e.koyeb.app/script.js" data-website-id="2fbccb2f-448e-43a4-bca0-2811a3635aa6" data-host-url="test.parteipapagei.de"></script>
+    """
 )
 
 POLICY = """
