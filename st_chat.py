@@ -11,6 +11,7 @@ import chromadb
 import llama_index.core.instrumentation as instrument
 import Stemmer
 import streamlit as st
+import streamlit.components.v1 as components
 import xxhash
 from llama_index.core import (PromptTemplate, QueryBundle, Settings,
                               VectorStoreIndex, get_response_synthesizer)
@@ -35,6 +36,44 @@ from supabase import Client, create_client
 from party_data import party_data
 
 logger = logging.getLogger(__name__)
+
+def get_secret_or_env_var(key: str, default: Optional[str] = None) -> str:
+    if not os.path.exists("./streamlit/secrets.toml"):
+        return os.getenv(key, default)
+    return st.secrets.get(key, default) or os.getenv(key, default)
+
+script_url = get_secret_or_env_var("ANALYTICS_SCRIPT_URL")
+website_id = get_secret_or_env_var("ANALYTICS_WEBSITE_ID")
+
+html_contents = f"""
+<script id="extractorScript">
+    (function() {{
+        let currentScript = document.getElementById('extractorScript');
+
+        // Ensure this script runs only once
+        if (window.parent.injectedTrackingScript) return;
+        window.parent.injectedTrackingScript = true;
+
+        // Create script element
+        let script = window.parent.document.createElement("script");
+        script.src = "{script_url}";
+        script.defer = true;
+        script.setAttribute("data-website-id", "{website_id}");
+
+        // Append script to parent document
+        window.parent.document.body.appendChild(script);
+
+        // Optionally remove the iframe itself (use carefully)
+        let iframes = window.parent.document.querySelectorAll("iframe");
+        for (let iframe of iframes) {{
+            if (iframe.contentWindow === window) {{
+                iframe.remove();
+            }}
+        }}
+    }})();
+</script>
+"""
+components.html(html_contents)
 
 POLICY = """
 Bevor es losgeht, lies bitte die folgenden Nutzungsbedingungen.  
@@ -102,11 +141,6 @@ Konzentriere dich ausschließlich auf die wichtigsten Punkte. Deine Antwort darf
 länger als 1-2 Sätze sein stellt nur den wichtigsten Punkt der Partei klar und prägnant 
 dar. 
 """
-
-def get_secret_or_env_var(key: str, default: Optional[str] = None) -> str:
-    if not os.path.exists("./streamlit/secrets.toml"):
-        return os.getenv(key, default)
-    return st.secrets.get(key, default) or os.getenv(key, default)
 
 # will be saved in the database to distinguish between test and production data
 ENVIRONMENT = get_secret_or_env_var("ENVIRONMENT")
@@ -763,3 +797,4 @@ if user_query or st.session_state.get("sample_query", None):
                 "party": party,
             }
         )
+
