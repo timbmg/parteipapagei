@@ -11,6 +11,7 @@ import chromadb
 import llama_index.core.instrumentation as instrument
 import Stemmer
 import streamlit as st
+import streamlit.components.v1 as components
 import xxhash
 from llama_index.core import (PromptTemplate, QueryBundle, Settings,
                               VectorStoreIndex, get_response_synthesizer)
@@ -764,7 +765,7 @@ if user_query or st.session_state.get("sample_query", None):
             }
         )
 
-st.markdown("""
+components.html("""
     <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
     <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
     """, 
