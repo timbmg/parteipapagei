@@ -97,11 +97,18 @@ informed_consent = st.Page(
     icon="🔬",
     url_path="informed-consent",
 )
+impressum = st.Page(
+     partial(st.markdown, open("sites/impressum.md").read(), unsafe_allow_html=True),
+    title="Impressum",
+    icon="🧑‍⚖️",
+    url_path="impressum",
+)
+
 pg = st.navigation(
     {
         "Chat": [st.Page("st_chat.py", title="ParteiPapagei", icon="🗳️", default=True)],
         "Wahlprogramme": [data["page"] for data in party_data.values()],
-        "Über": [about, disclaimer, data_protection, informed_consent],
+        "Über": [about, disclaimer, data_protection, informed_consent, impressum],
     },
     expanded=False,
 )
