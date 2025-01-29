@@ -120,21 +120,21 @@ Wir verarbeiten die Daten der Nutzer, um ihnen unsere Online-Dienste zur Verfüg
 Für die Bereitstellung des Onlineangebot werden folgende Anbieter genutzt:
 
 ### koyeb.com 
-Für parteipapagei.de wird folgender Dienstleister genutzt: 
-**Hersteller und Dienstanbieter**: [koyeb.com](https://koyeb.com) 
-**Datenschutzerklärung**: https://www.koyeb.com/docs/legal/data-processing-agreement 
-**Nutzungsbedingungen**: https://www.koyeb.com/docs/legal/msa
+Für parteipapagei.de wird folgender Dienstleister genutzt:  
+**Hersteller und Dienstanbieter**: [koyeb.com](https://koyeb.com)  
+**Datenschutzerklärung**: https://www.koyeb.com/docs/legal/data-processing-agreement  
+**Nutzungsbedingungen**: https://www.koyeb.com/docs/legal/msa  
 
 ### Streamlit.io 
-Für parteipapagei.streamlit.io wird folgender Dienstleister genutzt: 
-**Hersteller und Dienstanbieter**: [Streamlit.io](https://streamlit.io/) 
-**Datenschutzerklärung**: https://streamlit.io/privacy-policy 
-**Nutzungsbedingungen**: https://streamlit.io/terms-of-use 
+Für parteipapagei.streamlit.io wird folgender Dienstleister genutzt:  
+**Hersteller und Dienstanbieter**: [Streamlit.io](https://streamlit.io/)  
+**Datenschutzerklärung**: https://streamlit.io/privacy-policy  
+**Nutzungsbedingungen**: https://streamlit.io/terms-of-use  
 
 ### Snowflake Inc. 
-Für parteipapagei.streamlit.io wird folgender Dienstleister genutzt: 
-**Hersteller und Dienstanbieter**: [Snowflake Inc.](https://snowflake.com/) 
-**Datenschutzerklärung**: https://www.snowflake.com/privacy-policy/ 
+Für parteipapagei.streamlit.io wird folgender Dienstleister genutzt:  
+**Hersteller und Dienstanbieter**: [Snowflake Inc.](https://snowflake.com/)  
+**Datenschutzerklärung**: https://www.snowflake.com/privacy-policy/  
 
 ## Einsatz von Cookies
 
