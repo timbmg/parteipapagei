@@ -766,7 +766,6 @@ if user_query or st.session_state.get("sample_query", None):
         )
 
 components.html("""
-    <script data-collect-dnt="true" data-hostname="test.parteipapagei.de" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-    <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true&?hostname=test.parteipapagei.de" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="a42e4197-604e-45d1-b826-200e42ff46fc"></script>
     """
 )
