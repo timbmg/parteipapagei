@@ -602,6 +602,9 @@ st.markdown(
     header {
         visibility: hidden !important;
     }
+    .element-container:has(iframe[height="0"]) {
+        display: none;
+    }
     .block-container {
         padding-top: 0rem;
     }
