@@ -73,7 +73,7 @@ html_contents = f"""
     }})();
 </script>
 """
-components.html(html_contents)
+components.html(html_contents, width=0, height=0)
 
 POLICY = """
 Bevor es losgeht, lies bitte die folgenden Nutzungsbedingungen.  
