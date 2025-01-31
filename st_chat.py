@@ -587,9 +587,16 @@ if not cookie_controller.get("policy-accepted"):
     accept_policy()
 
 st.title("🗳️ ParteiPapagei", anchor=False)
+# Description for the app for Google search results
+with st.container(key="description"):
+    st.header("ParteiPapagei: KI Chat über die Wahlprogramme der Parteien zur Bundestagswahl 2025")
+    st.text("ParteiPapagei ist eine KI, mit der Du die Wahlprogramme der Parteien zur Bundestagswahl 2025 vergleichen und analysieren kannst. Stelle dazu einfach eine Frage und der ParteiPapagei wird Dir eine Antwort für die Parteien basierend auf deren Wahlprogrammen generieren.")
 header = st.container(key="container-header")
 st.markdown(
     """<style>
+    .st-key-description {
+        display: none !important;
+    }
     h1 {
         padding-top:1rem !important
     }
