@@ -13,7 +13,7 @@ Für Feature Requests und Bug Reports können Sie gerne ein [Issue](https://gith
 ## Technologie
 ParteiPapagei basiert auf Retrieval Augmented Generation (RAG) [[1](#refRAG)]. Dabei wird eine Suche mit einem Large Language Model (LLM) verknüpft. Im Fall von ParteiPapagei werden zunächst relevante Passagen aus dem Wahlprogramm gesucht, basierend auf der Eingabe des Nutzers. Abschließend werden die relevanten Passagen genutzt, um eine Antwort zu generieren.
 
-![RAG](./rag.png)
+![RAG](app/static/rag.png)
 
 ### Preprocessing
 Zunächst wurden die PDFs der Wahlprogramme halb-automatisch in Markdown überführt. Anschließend wird der Text in Passagen unterteilt, falls diese noch zu lang sind, werden sie wiederum aufgeteilt ("Chunking"). Zusätzlich zum Text wird außerdem die Überschrift der Passagen gespeichert, um den Kontext der Passage später besser zu verstehen.
@@ -36,7 +36,7 @@ Die Passagen aus dem Wahlprogramm, die durch die Suche gefunden wurden, werden d
 - ParteiPapagei besitzt kein "Gedächtnis" und berücksichtigt Kontext (also die vorherigen Nachrichten) zur Beantwortung der Fragen nicht. D.h. jede Frage wird unabhängig beantwortet und Folgefragen können nicht auf vorherige Antworten Bezug nehmen.
 - ParteiPapagei kann nur auf die Informationen in den Wahlprogrammen zugreifen. Es kann keine aktuellen Informationen oder Meinungen zu politischen Themen geben.
 - Erfahrungsgemäß funktionieren sehr allgemein gehaltene Fragen weniger gut, da die Suche nach relevanten Passagen schwieriger ist.
-- ParteiPapagei benutzt LLMs für die Suche und Generierung von Antworten. Diese Modelle sind nicht immer neutral und können bestimmte Bias enthalten [[6](refBias)].
+- ParteiPapagei benutzt LLMs für die Suche und Generierung von Antworten. Diese Modelle sind nicht immer neutral und können bestimmte Bias enthalten [[6](#refBias)].
 
 ## Referenzen
 

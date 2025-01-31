@@ -13,3 +13,6 @@ level = "info"
 
 [browser]
 gatherUsageStats = true
+
+[server]
+enableStaticServing = true
