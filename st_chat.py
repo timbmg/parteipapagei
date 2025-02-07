@@ -45,7 +45,7 @@ def get_secret_or_env_var(key: str, default: Optional[str] = None) -> str:
 script_url = get_secret_or_env_var("ANALYTICS_SCRIPT_URL")
 website_id = get_secret_or_env_var("ANALYTICS_WEBSITE_ID")
 
-html_contents = f"""
+tracking_code = f"""
 <script id="extractorScript">
     (function() {{
         let currentScript = document.getElementById('extractorScript');
@@ -73,7 +73,6 @@ html_contents = f"""
     }})();
 </script>
 """
-components.html(html_contents, width=0, height=0)
 
 POLICY = """
 Bevor es losgeht, lies bitte die folgenden Nutzungsbedingungen.  
@@ -808,3 +807,4 @@ if user_query or st.session_state.get("sample_query", None):
             }
         )
 
+components.html(tracking_code, width=0, height=0)
